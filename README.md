@@ -24,3 +24,11 @@
 - servizio di chat in game;
 - creazione di più stanze e accesso ad esse tramite codice;
 - possibilità di vedere i dati relativi ad un giocatore (partite vinte, punteggio totale, percentuale vittoria, ...) premendo sulla sua foto profilo.
+
+## Tecnologie:
+- socket.io;
+- express.js;
+- react.js;
+- firebase;
+- libreria carte;
+- bootstrap (possibilità di cambiare framework).
