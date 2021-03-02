@@ -12,14 +12,17 @@ const io = require("socket.io")(server);
 io.on("connection", (socketclient) => {
 	console.log("client connesso");
 	socketclient.emit("message", { message: "ciao", sender: "io me stesso" });
+	socketclient.join('roomProva');
 	socketclient.on("ping", () => {
 		console.log("ping from client");
 		socketclient.emit("pong", {});
 	});
 });
 
-setInterval(() => {
-	io.emit("pong", {});
+
+
+ setInterval(() => {
+	io.to('roomProva').emit("pong", {});
 }, 1000);
 
 server.listen(3000);
