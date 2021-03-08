@@ -1,3 +1,5 @@
+const scripts = require("./scripts.js");
+
 const express = require("express");
 const app = express();
 const server = require("http").createServer(app);
@@ -13,13 +15,18 @@ const port = 4321;
 const users = new Map();
 
 io.on("connection", (client) => {
-	users.set(client.id, client);
-
-	console.log("client", client.id, "connected");
-	client.emit("message", { message: "ciao", sender: "io me stesso" });
+	if (users.size < 5) {
+		users.set(client.id, client);
+		console.log("client", client.id, "connected");
+		client.emit("message", { message: "ciao", sender: "io me stesso" });
+		client.join(client.id);
+		if (users.size == 5){
+			scripts.game(users, io);
+		}
+	}
 	client.on("ping", () => {
 		console.log("ping from client");
-		client.emit("pong", {});
+		//client.emit("pong", {});
 	});
 
 	client.on("disconnect", () => {
