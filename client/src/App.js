@@ -1,7 +1,6 @@
 import React, { useReducer, useContext, useEffect } from "react";
 import { ping, pong, carteIniziali, chiama, chiamata } from "./api.js";
 import { valoreChiamata } from "./rules.js";
-/* import openSocket from "socket.io-client"; */
 import "./style.css";
 const AppContext = React.createContext(null);
 
@@ -22,28 +21,10 @@ export function App() {
 			console.log(carte);
 			dispatch({ type: "carte", payload: carte });
 		});
-		/*chiama((attuale) => {
-			console.log(attuale);
-			
-			chiamata(valoreChiamata(attuale, state.carte));
-		});
-		*/
-		socket.on("chiama", async (attuale, tempo) => {
-			await new Promise((resolve, reject) => {
-				setTimeout(resolve, tempo);
-			})
-			return valoreChiamata(attuale, state.carte);
+		chiama((attuale, callbackServer) => {
+			callbackServer(valoreChiamata(attuale, state.carte));
 		});
 	}, []);
-
-	/* 	socket.on("connect", () => {
-		console.log("connessione...");
-	});
-
-	socket.on("pong", () => {
-		console.log("ciao");
-		dispatch({ type: "pong" });
-	}); */
 
 	return (
 		<div className="ping-zone">

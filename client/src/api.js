@@ -18,25 +18,5 @@ export function carteIniziali(callback) {
 }
 
 export function chiama(callback) {
-	//socket.on("chiama", (attuale) => callback(attuale));
-	socket.on("chiama", async (attuale, tempo) => {
-		await new Promise((resolve, reject) => {
-			setTimeout(resolve, tempo);
-		})
-		if (params.chiamata == null) {
-			chiamanti.splice(i, 1);
-		}
-		else {
-			attuale = params.chiamata;
-		}
-	})
+	socket.on("chiama", (attuale, fn) => callback(attuale, fn));
 }
-
-export function chiamata(valore) {
-	socket.emit("chiamata", valore);
-}
-
-/* export function ping(cb) {
-	socket.on("timer", (timestamp) => cb(null, timestamp));
-	socket.emit("subscribeToTimer", 1000);
-} */
