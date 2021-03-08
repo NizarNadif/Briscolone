@@ -1,5 +1,6 @@
 import React, { useReducer, useContext, useEffect } from "react";
-import { ping, pong } from "./api.js";
+import { ping, pong, carteIniziali, chiama, chiamata } from "./api.js";
+import { valoreChiamata } from "./rules.js";
 /* import openSocket from "socket.io-client"; */
 import "./style.css";
 const AppContext = React.createContext(null);
@@ -9,12 +10,29 @@ export function App() {
 		ping: 0,
 		pong: 0,
 		registroAzioni: new Array(),
+		carte: new Array(),
 	});
 
 	useEffect(() => {
 		pong((type) => {
 			console.log("pong arrivato");
 			dispatch({ type: type });
+		});
+		carteIniziali((carte) => {
+			console.log(carte);
+			dispatch({ type: "carte", payload: carte });
+		});
+		/*chiama((attuale) => {
+			console.log(attuale);
+			
+			chiamata(valoreChiamata(attuale, state.carte));
+		});
+		*/
+		socket.on("chiama", async (attuale, tempo) => {
+			await new Promise((resolve, reject) => {
+				setTimeout(resolve, tempo);
+			})
+			return valoreChiamata(attuale, state.carte);
 		});
 	}, []);
 
@@ -47,6 +65,9 @@ function reducer(state, action) {
 		case "pong":
 			newState.pong = state.pong++;
 			newState.registroAzioni = [...state.registroAzioni, "pong"];
+			break;
+		case "carte":
+			newState.carte = action.payload;
 			break;
 		default:
 			break;

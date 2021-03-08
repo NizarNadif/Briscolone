@@ -3,12 +3,14 @@ const scripts = require("./scripts.js");
 const express = require("express");
 const app = express();
 const server = require("http").createServer(app);
-const io = require("socket.io")(server, {
+var io = require("socket.io")(server, {
 	cors: {
 		origin: "*",
 		methods: ["GET", "POST"],
 	},
 });
+
+var io = require("socket.io.wait")(io);
 
 const port = 4321;
 
