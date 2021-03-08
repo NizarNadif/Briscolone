@@ -1,28 +1,33 @@
 const express = require("express");
 const app = express();
-var clientDir = __dirname;
-for (let i = 0; i < 1; i++)
-    clientDir = clientDir.substring(0, clientDir.lastIndexOf("\\"));
-clientDir += "\\client";
-
-app.use(express.static(clientDir));
 const server = require("http").createServer(app);
-const io = require("socket.io")(server);
+const io = require("socket.io")(server, {
+	cors: {
+		origin: "*",
+		methods: ["GET", "POST"],
+	},
+});
 
-io.on("connection", (socketclient) => {
-	console.log("client connesso");
-	socketclient.emit("message", { message: "ciao", sender: "io me stesso" });
-	socketclient.join('roomProva');
-	socketclient.on("ping", () => {
+const port = 4321;
+
+const users = new Map();
+
+io.on("connection", (client) => {
+	users.set(client.id, client);
+
+	console.log("client", client.id, "connected");
+	client.emit("message", { message: "ciao", sender: "io me stesso" });
+	client.on("ping", () => {
 		console.log("ping from client");
-		socketclient.emit("pong", {});
+		client.emit("pong", {});
+	});
+
+	client.on("disconnect", () => {
+		console.log("client ", client.id, "disconnected");
+		users.delete(client.id); // dimensione => users.size
 	});
 });
 
-
-
- setInterval(() => {
-	io.to('roomProva').emit("pong", {});
-}, 1000);
-
-server.listen(3000);
+server.listen(port, () => {
+	console.log("Listening on port", port);
+});
