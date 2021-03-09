@@ -7,11 +7,7 @@ let io;
 let deck = new Array();
 let giocatoreIniziale = 0;
 
-const sleepNow = (delay) => {
-	new Promise((resolve) => setTimeout(resolve, delay));
-};
-
-async function game(utenti, connessione) {
+function game(utenti, connessione) {
 	//io.emit("pong", {});
 	users = utenti;
 	io = connessione;
@@ -20,7 +16,7 @@ async function game(utenti, connessione) {
 	call();
 }
 
-async function cardsDistribution() {
+function cardsDistribution() {
 	deckGenerator();
 
 	deck = deck.sort(() => Math.random() - 0.5);
@@ -30,7 +26,7 @@ async function cardsDistribution() {
 	});
 }
 
-async function deckGenerator() {
+function deckGenerator() {
 	let semi = ["Coppe", "Spade", "Bastoni", "Denari"];
 	let valori = [
 		"Asse",
@@ -55,7 +51,7 @@ async function deckGenerator() {
 			});
 }
 
-async function call() {
+function call() {
 	let chiamanti = Array.from(users.values());
 	let id = Array.from(users.keys());
 	console.log("Call");
@@ -75,7 +71,7 @@ async function call() {
 
 	let i = giocatoreIniziale - 1;
 
-	function chiama(chiamata) {
+	const chiama = (chiamata) => {
 		if (chiamanti.length > 1) {
 			if (chiamata == null) {
 				chiamanti.splice(i, 1);
@@ -85,7 +81,6 @@ async function call() {
 			}
 
 			i = (i + 1) % chiamanti.length;
-			console.log(i);
 			chiamanti[i].emit("chiama", attuale, chiama);
 		} else return;
 	}

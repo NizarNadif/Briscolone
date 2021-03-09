@@ -10,7 +10,6 @@ var io = require("socket.io")(server, {
 	},
 });
 
-var io = require("socket.io.wait")(io);
 
 const port = 4321;
 
@@ -21,7 +20,7 @@ io.on("connection", (client) => {
 		users.set(client.id, client);
 		console.log("client", client.id, "connected");
 		client.emit("message", { message: "ciao", sender: "io me stesso" });
-		client.join(client.id);
+		//client.join(client.id);
 		if (users.size == 5){
 			scripts.game(users, io);
 		}
@@ -30,12 +29,17 @@ io.on("connection", (client) => {
 		console.log("ping from client");
 		//client.emit("pong", {});
 	});
-
+	
 	client.on("disconnect", () => {
 		console.log("client ", client.id, "disconnected");
 		users.delete(client.id); // dimensione => users.size
 	});
 });
+/*
+setInterval(() => {
+    io.emit("pong", {})
+}, 1000);
+*/
 
 server.listen(port, () => {
 	console.log("Listening on port", port);
