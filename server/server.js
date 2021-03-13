@@ -40,6 +40,14 @@ io.on("connection", (client) => {
 			scripts.chiamata(chiamata);
 		}
 	});
+
+	client.on("carta giocata", (carta) => {
+		console.log(carta);
+		if (scripts.checkTurno(client)){
+			carta['giocatore'] = client;
+			scripts.cartaGiocata(carta);
+		}
+	})
 });
 
 /*
