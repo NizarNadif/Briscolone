@@ -21,3 +21,4 @@ export function valoreChiamata(attuale, carte) {
 	}
 	return chiamata;
 }
+

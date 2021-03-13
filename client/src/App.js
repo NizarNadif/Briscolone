@@ -1,5 +1,5 @@
 import React, { useReducer, useContext, useEffect } from "react";
-import { ping, pong, carteIniziali, chiama, chiamata } from "./api.js";
+import { ping, pong, carteIniziali, chiama, chiamata, selezioneChiamata, invia } from "./api.js";
 import { valoreChiamata } from "./rules.js";
 import "./style.css";
 const AppContext = React.createContext(null);
@@ -10,8 +10,9 @@ export function App() {
 		pong: 0,
 		registroAzioni: new Array(),
 		carte: new Array(),
+		attuale: 0,
 	});
-
+	let elementi = '';
 	useEffect(() => {
 		pong((type) => {
 			console.log("pong arrivato");
@@ -21,9 +22,18 @@ export function App() {
 			console.log(carte);
 			dispatch({ type: "carte", payload: carte });
 		});
+		/*
 		chiama((attuale, callbackServer) => {
 			callbackServer(valoreChiamata(attuale, state.carte));
 		});
+		*/
+		chiama((attuale) => {
+			chiamata(valoreChiamata(attuale, state.carte));
+		});
+
+		selezioneChiamata((attuale) => {
+			elementi = <Selezione valore={attuale} />
+		})
 	}, []);
 
 	return (
@@ -31,7 +41,9 @@ export function App() {
 			<AppContext.Provider value={{ state, dispatch }}>
 				<DataWindow />
 				<PingButton />
+				<Selezione valore={0}/>
 			</AppContext.Provider>
+			
 		</div>
 	);
 }
@@ -81,4 +93,22 @@ export function PingButton(props) {
 			PING
 		</button>
 	);
+}
+
+export function Selezione(props) {
+	const { state, dispatch } = useContext(AppContext);
+
+	return (
+		<div className="selezione">
+			<textarea id="testo"></textarea>
+			<label id="label">{props.valore}</label>
+			<button
+				onClick={() => {
+					invia(document.getElementById("testo").innerHTML);
+				}}
+			>
+			Invia valore
+			</button>
+		</div>
+	)
 }
