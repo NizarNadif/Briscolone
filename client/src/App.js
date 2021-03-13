@@ -1,4 +1,7 @@
 import React, { useReducer, useContext, useEffect } from "react";
+import { BarraChiamata } from "./componentiChiamata.js";
+import { verificaChiamata } from "./rules.js";
+import "./style.css";
 import {
 	ping,
 	pong,
@@ -8,8 +11,6 @@ import {
 	selezioneChiamata,
 	invia,
 } from "./api.js";
-import { verificaChiamata } from "./rules.js";
-import "./style.css";
 const AppContext = React.createContext(null);
 
 export function App() {
@@ -49,6 +50,7 @@ export function App() {
 				<DataWindow />
 				<PingButton />
 				<Selezione valore={-1} />
+				<BarraChiamata />
 			</AppContext.Provider>
 		</div>
 	);
