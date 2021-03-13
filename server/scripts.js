@@ -13,7 +13,7 @@ function game(utenti, connessione) {
 	//io.emit("pong", {});
 	users = utenti;
 	io = connessione;
-	
+
 	cardsDistribution();
 
 	call();
@@ -79,10 +79,11 @@ function call() {
 	i = giocatoreIniziale;
 
 	users.forEach((player) => {
-		player.emit("selezioneChiamata", attuale);
+		player.emit("selezione chiamata", {
+			attuale: attuale,
+			chiamante: chiamanti[i].id,
+		});
 	});
-
-
 
 	/*
 	const chiama = (chiamata) => {
@@ -126,12 +127,27 @@ function call() {
 	//console.log("Carta chiamata:", ordine[attuale], "di X");
 }
 
-function autorizza(id){
+function autorizza(id) {
 	return id == chiamanti[i].id;
 }
 
-function chiamata(valore){
-	console.log(valore);
+function chiamata(valore) {
+	console.log(valore, attuale);
+	if (valore == null) chiamanti.splice(i, 1);
+	else {
+		attuale = valore;
+	}
+	i = (i + 1) % chiamanti.length;
+	if (chiamanti.length > 1) {
+		users.forEach((player) => {
+			player.emit("selezione chiamata", {
+				attuale: attuale,
+				chiamante: chiamanti[i].id,
+			});
+		});
+	} else {
+		console.log("ce l'abbiamo fatta!");
+	}
 }
 /*
 function prova(i, attuale, chiamanti){
