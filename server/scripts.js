@@ -4,6 +4,7 @@ module.exports = {
 	chiamata,
 	checkTurno,
 	cartaGiocata,
+
 };
 
 let users;
@@ -23,7 +24,7 @@ function game(utenti, connessione) {
 	call();
 }
 
-function sviluppoPartita(vincitore) {
+function sviluppoPartita(vincitore){
 	vincitoreChiamata = vincitore;
 	i = giocatoreIniziale;
 	users.forEach((player) => {
@@ -37,7 +38,7 @@ function cardsDistribution() {
 	deck = deck.sort(() => Math.random() - 0.5);
 	let indice = 0;
 	users.forEach((player) => {
-		const mano = deck.slice(indice, (indice += 8));
+		const mano = deck.slice(indice, (indice += 8))
 		player.emit("carteIniziali", mano);
 		mani.push(mano);
 	});
@@ -131,20 +132,20 @@ function chiamata(valore) {
 	}
 }
 
-function checkTurno(id) {
+function checkTurno(id){
 	return id == users[i].id;
 }
 
 let turno = Array();
 let primoTurno = true;
-let briscola = "";
+let briscola = '';
 let punti = 0;
 
-function cartaGiocata(carta) {
+function cartaGiocata(carta){
 	turno.push(carta);
-	if (turno.length == 5) {
+	if (turno.length == 5){
 		let vincente = cartaVincente();
-		if (primoTurno) {
+		if (primoTurno){
 			scegliBriscola();
 		}
 		primoTurno = false;
@@ -152,13 +153,14 @@ function cartaGiocata(carta) {
 		vincente.giocatore["punti"] += punti;
 
 		punti = 0;
-	} else {
-		i = (i + 1) % 5;
-		io.emit("prossimo turno", { giocatore: users[i].id, carta: carta });
+	}
+	else {
+		i = (i+1)%5;
+		io.emit("prossimo turno", { giocatore: users[i].id, carta: carta});
 	}
 }
 
-function cartaVincente() {
+function cartaVincente(){
 	let vincente = turno[0];
 	let ordine = [
 		"Asso",
@@ -175,22 +177,26 @@ function cartaVincente() {
 	turno.forEach((carta) => {
 		punti += carta.punti;
 		if (carta.seme == briscola) {
-			if (vincente.seme == briscola) {
-				if (ordine.find(vincente.valore) > ordine.find(carta.valore)) {
+			if (vincente.seme == briscola){
+				if (ordine.find(vincente.valore) > ordine.find(carta.valore)){
 					vincente = carta;
 				}
-			} else {
+			}
+			else {
 				vincente = carta;
 			}
-		} else if (vincente.seme != briscola) {
+		}
+		else if (vincente.seme != briscola) {
 			if (vincente.seme == carta.seme) {
-				if (ordine.find(vincente.valore) > ordine.find(carta.valore)) {
+				if (ordine.find(vincente.valore) > ordine.find(carta.valore)){
 					vincente = carta;
 				}
 			}
 		}
-	});
+	})
 	return vincente;
 }
 
-function scegliBriscola() {}
+function scegliBriscola(){
+
+}
