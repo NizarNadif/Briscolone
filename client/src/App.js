@@ -1,4 +1,7 @@
 import React, { useReducer, useContext, useEffect } from "react";
+import { BarraChiamata } from "./componentiChiamata.js";
+import { verificaChiamata } from "./rules.js";
+import "./style.css";
 import {
 	ping,
 	pong,
@@ -8,8 +11,6 @@ import {
 	selezioneChiamata,
 	invia,
 } from "./api.js";
-import { verificaChiamata } from "./rules.js";
-import "./style.css";
 const AppContext = React.createContext(null);
 
 export function App() {
@@ -33,12 +34,12 @@ export function App() {
 
 		selezioneChiamata((attuale, chiamante) => {
 			console.log("selezione chiamata", attuale);
-			let classi = "selezione ";
+			let classi = "barra_chiamata ";
 			if (chiamante) {
 				console.log("tocca a te!");
 				classi += "appear";
 			} else classi += "disappear";
-			document.getElementsByClassName("selezione")[0].className = classi;
+			document.getElementsByClassName("barra_chiamata")[0].className = classi;
 			dispatch({ type: "chiamata attuale", payload: attuale });
 		});
 	}, []);
@@ -48,7 +49,7 @@ export function App() {
 			<AppContext.Provider value={{ state, dispatch }}>
 				<DataWindow />
 				<PingButton />
-				<Selezione valore={-1} />
+				<BarraChiamata attuale={state.attuale} />
 			</AppContext.Provider>
 		</div>
 	);
@@ -101,27 +102,5 @@ export function PingButton(props) {
 		>
 			PING
 		</button>
-	);
-}
-
-export function Selezione(props) {
-	const { state, dispatch } = useContext(AppContext);
-
-	return (
-		<div className="selezione disappear">
-			<input
-				type="text"
-				id="testo"
-				placeholder="la tua chiamata (anfame se non tocca a te, lo so)"
-			></input>
-			<label id="label">chiamata attuale pari a {state.attuale}</label>
-			<button
-				onClick={() => {
-					verificaChiamata(state.attuale, document.getElementById("testo").value);
-				}}
-			>
-				Invia valore
-			</button>
-		</div>
 	);
 }
