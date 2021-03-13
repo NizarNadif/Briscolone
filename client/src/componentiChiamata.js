@@ -1,6 +1,7 @@
 import React, { useReducer, useContext, useEffect } from "react";
+import { verificaChiamata } from "./rules";
 
-export function BarraChiamata() {
+export function BarraChiamata(params) {
 	let ordine = [
 		"Asso",
 		"Tre",
@@ -12,15 +13,33 @@ export function BarraChiamata() {
 		"Cinque",
 		"Quattro",
 		"Due",
+		"non chiamare",
 	];
 
-	let pulsantiJSX = ordine.map((nome) => {
-		return <PulsanteChiamata nome={nome} />;
+	let pulsantiJSX = ordine.map((nome, index) => {
+		return (
+			<PulsanteChiamata nome={nome} valore={index} attuale={params.attuale} />
+		);
 	});
 
-	return <div className="barra_chiamata">{pulsantiJSX}</div>;
+	return (
+		<div className="barra_chiamata disappear">
+			<p>ultima chiamata: {params.attuale}</p>
+			{pulsantiJSX}
+		</div>
+	);
 }
 
 function PulsanteChiamata(props) {
-	return <button>{props.nome}</button>;
+	let value = props.valore;
+	if (props.valore == 10) value = "null";
+	return (
+		<button
+			onClick={() => {
+				verificaChiamata(props.attuale, value);
+			}}
+		>
+			{props.nome}
+		</button>
+	);
 }

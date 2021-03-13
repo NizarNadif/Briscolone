@@ -74,7 +74,7 @@ function call() {
 		"Quattro",
 		"Due",
 	];
-	attuale = 0;
+	attuale = -1;
 
 	i = giocatoreIniziale;
 

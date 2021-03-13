@@ -35,7 +35,7 @@ io.on("connection", (client) => {
 	});
 
 	client.on("chiamata", (chiamata) => {
-		console.log(chiamata + "server");
+		console.log("chiamata di", client.id, ":", chiamata);
 		if (scripts.autorizza(client.id)) {
 			scripts.chiamata(chiamata);
 		}
