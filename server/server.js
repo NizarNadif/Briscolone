@@ -10,7 +10,6 @@ var io = require("socket.io")(server, {
 	},
 });
 
-
 const port = 4321;
 
 const users = new Map();
@@ -20,8 +19,8 @@ io.on("connection", (client) => {
 		users.set(client.id, client);
 		console.log("client", client.id, "connected");
 		client.emit("message", { message: "ciao", sender: "io me stesso" });
-		//client.join(client.id);
-		if (users.size == 5){
+		client.join(client.id);
+		if (users.size == 5) {
 			scripts.game(users, io);
 		}
 	}
@@ -29,12 +28,20 @@ io.on("connection", (client) => {
 		console.log("ping from client");
 		//client.emit("pong", {});
 	});
-	
+
 	client.on("disconnect", () => {
 		console.log("client ", client.id, "disconnected");
 		users.delete(client.id); // dimensione => users.size
 	});
+
+	client.on("chiamata", (chiamata) => {
+		console.log(chiamata + "server");
+		if (scripts.autorizza(client.id)) {
+			scripts.chiamata(chiamata);
+		}
+	});
 });
+
 /*
 setInterval(() => {
     io.emit("pong", {})

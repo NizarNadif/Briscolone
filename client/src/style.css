@@ -1,4 +1,12 @@
 .app {
-    font-family: sans-serif;
-    align-content: center;
-  }
+	font-family: sans-serif;
+	align-content: center;
+}
+
+.appear {
+	display: block;
+}
+
+.disappear {
+	display: none;
+}

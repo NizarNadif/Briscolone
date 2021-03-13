@@ -17,6 +17,21 @@ export function carteIniziali(callback) {
 	socket.on("carteIniziali", (carte) => callback(carte));
 }
 
-export function chiama(callback) {
-	socket.on("chiama", (attuale, fn) => callback(attuale, fn));
+export function chiamata(chiamata) {
+	console.log("Arrivato " + chiamata);
+	console.log("chiamata");
+	socket.emit("chiamata", chiamata);
+}
+
+export function selezioneChiamata(callback) {
+	socket.on("selezione chiamata", (params) => {
+		console.log(params);
+		if (socket.id == params.chiamante) callback(params.attuale, 1);
+		else callback(params.attuale, 0);
+	});
+}
+
+export function invia(chiamata) {
+	console.log("hai chiamato", chiamata);
+	socket.emit("chiamata", chiamata);
 }

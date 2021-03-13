@@ -1,6 +1,14 @@
 import React, { useReducer, useContext, useEffect } from "react";
-import { ping, pong, carteIniziali, chiama, chiamata } from "./api.js";
-import { valoreChiamata } from "./rules.js";
+import {
+	ping,
+	pong,
+	carteIniziali,
+	chiama,
+	chiamata,
+	selezioneChiamata,
+	invia,
+} from "./api.js";
+import { verificaChiamata } from "./rules.js";
 import "./style.css";
 const AppContext = React.createContext(null);
 
@@ -10,8 +18,9 @@ export function App() {
 		pong: 0,
 		registroAzioni: new Array(),
 		carte: new Array(),
+		attuale: 0,
 	});
-
+	let elementi = "";
 	useEffect(() => {
 		pong((type) => {
 			console.log("pong arrivato");
@@ -21,8 +30,16 @@ export function App() {
 			console.log(carte);
 			dispatch({ type: "carte", payload: carte });
 		});
-		chiama((attuale, callbackServer) => {
-			callbackServer(valoreChiamata(attuale, state.carte));
+
+		selezioneChiamata((attuale, chiamante) => {
+			console.log("selezione chiamata", attuale);
+			let classi = "selezione ";
+			if (chiamante) {
+				console.log("tocca a te!");
+				classi += "appear";
+			} else classi += "disappear";
+			document.getElementsByClassName("selezione")[0].className = classi;
+			dispatch({ type: "chiamata attuale", payload: attuale });
 		});
 	}, []);
 
@@ -31,6 +48,7 @@ export function App() {
 			<AppContext.Provider value={{ state, dispatch }}>
 				<DataWindow />
 				<PingButton />
+				<Selezione valore={-1} />
 			</AppContext.Provider>
 		</div>
 	);
@@ -49,6 +67,9 @@ function reducer(state, action) {
 			break;
 		case "carte":
 			newState.carte = action.payload;
+			break;
+		case "chiamata attuale":
+			newState.attuale = action.payload;
 			break;
 		default:
 			break;
@@ -80,5 +101,27 @@ export function PingButton(props) {
 		>
 			PING
 		</button>
+	);
+}
+
+export function Selezione(props) {
+	const { state, dispatch } = useContext(AppContext);
+
+	return (
+		<div className="selezione disappear">
+			<input
+				type="text"
+				id="testo"
+				placeholder="la tua chiamata (anfame se non tocca a te, lo so)"
+			></input>
+			<label id="label">chiamata attuale pari a {state.attuale}</label>
+			<button
+				onClick={() => {
+					verificaChiamata(state.attuale, document.getElementById("testo").value);
+				}}
+			>
+				Invia valore
+			</button>
+		</div>
 	);
 }
