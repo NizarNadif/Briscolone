@@ -42,14 +42,14 @@ io.on("connection", (client) => {
 	});
 
 	client.on("carta giocata", (carta) => {
-		console.log(carta);
-		if (scripts.checkTurno(client)){
-			carta['giocatore'] = client;
-			scripts.cartaGiocata(carta);
+		if (scripts.checkTurno(client.id)) {
+			console.log(carta);
+			let temp = { ...carta };
+			carta["giocatore"] = client;
+			scripts.cartaGiocata(temp, carta);
 		}
-	})
+	});
 });
-
 
 server.listen(port, () => {
 	console.log("Listening on port", port);
