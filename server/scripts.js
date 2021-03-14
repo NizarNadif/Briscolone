@@ -106,11 +106,19 @@ function autorizza(id) {
 
 function chiamata(valore) {
 	console.log(valore, attuale);
-	if (valore == null) chiamanti.splice(i, 1);
+	if (valore == null) {
+		chiamanti.splice(i, 1);
+		if (i == chiamanti.length)
+		i = 0;
+	}
 	else {
 		attuale = valore;
+		i = (i + 1) % chiamanti.length;
 	}
-	i = (i + 1) % chiamanti.length;
+	chiamanti.forEach((player) => {
+		console.log(player.id);
+	})
+	
 	if (chiamanti.length > 1) {
 		users.forEach((player) => {
 			player.emit("selezione chiamata", {
