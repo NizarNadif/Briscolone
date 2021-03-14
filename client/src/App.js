@@ -1,15 +1,11 @@
 import React, { useReducer, useContext, useEffect } from "react";
 import { BarraChiamata } from "./componentiChiamata.js";
-import { verificaChiamata } from "./rules.js";
 import "./style.css";
 import {
 	ping,
 	pong,
 	carteIniziali,
-	chiama,
-	chiamata,
 	selezioneChiamata,
-	invia,
 } from "./api.js";
 const AppContext = React.createContext(null);
 
@@ -21,7 +17,7 @@ export function App() {
 		carte: new Array(),
 		attuale: 0,
 	});
-	let elementi = "";
+
 	useEffect(() => {
 		pong((type) => {
 			console.log("pong arrivato");

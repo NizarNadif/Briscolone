@@ -50,11 +50,6 @@ io.on("connection", (client) => {
 	})
 });
 
-/*
-setInterval(() => {
-    io.emit("pong", {})
-}, 1000);
-*/
 
 server.listen(port, () => {
 	console.log("Listening on port", port);

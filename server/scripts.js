@@ -158,7 +158,7 @@ function cartaGiocata(carta) {
 		primoTurno = false;
 
 		vincente.giocatore["punti"] += punti;
-
+		turno = new Array();
 		punti = 0;
 	} else {
 		i = (i + 1) % 5;
@@ -201,4 +201,10 @@ function cartaVincente() {
 	return vincente;
 }
 
-function scegliBriscola() {}
+function scegliBriscola() {
+	vincitoreChiamata.emit("scegli la briscola", {});
+	vincitoreChiamata.on("briscola scelta", (briscolaScelta) => {
+		briscola = briscolaScelta;
+		console.log(briscola);
+	});
+}

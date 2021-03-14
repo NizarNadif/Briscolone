@@ -1,4 +1,4 @@
-import React, { useReducer, useContext, useEffect } from "react";
+import React from "react";
 import { verificaChiamata } from "./rules";
 
 export function BarraChiamata(params) {
