@@ -1,4 +1,5 @@
 import React, { useReducer, useContext, useEffect } from "react";
+// import immaginiCarte from "../public/assets/carte";
 import { BarraChiamata } from "./componentiChiamata.js";
 import "./style.css";
 import {
@@ -6,6 +7,8 @@ import {
 	pong,
 	carteIniziali,
 	selezioneChiamata,
+	giocaCarta,
+	prossimoTurno,
 } from "./api.js";
 const AppContext = React.createContext(null);
 
@@ -38,6 +41,12 @@ export function App() {
 			document.getElementsByClassName("barra_chiamata")[0].className = classi;
 			dispatch({ type: "chiamata attuale", payload: attuale });
 		});
+
+		prossimoTurno((myCard, prossimo, carta) => {
+			console.log("Prossimo a giocare:", prossimo);
+			console.log("Ultima carta giocata:", carta);
+			if (myCard) dispatch({ type: "rimuovi carta", payload: carta });
+		});
 	}, []);
 
 	return (
@@ -46,6 +55,7 @@ export function App() {
 				<DataWindow />
 				<PingButton />
 				<BarraChiamata attuale={state.attuale} />
+				<Carte />
 			</AppContext.Provider>
 		</div>
 	);
@@ -67,6 +77,12 @@ function reducer(state, action) {
 			break;
 		case "chiamata attuale":
 			newState.attuale = action.payload;
+			break;
+		case "rimuovi carta":
+			let urlCarta = action.payload.url;
+			newState.carte = state.carte.filter((carta) => {
+				return carta.url != urlCarta;
+			});
 			break;
 		default:
 			break;
@@ -97,6 +113,31 @@ export function PingButton(props) {
 			}}
 		>
 			PING
+		</button>
+	);
+}
+
+export function Carte() {
+	const { state, dispatch } = useContext(AppContext);
+
+	let manoJSX = state.carte.map((carta) => {
+		return <Carta carta={carta} />;
+	});
+
+	return <div className="mano">{manoJSX}</div>;
+}
+
+function Carta(props) {
+	// const immagine = require("../public/assets/carte/" + props.url);
+	return (
+		<button
+			onClick={() => {
+				giocaCarta(props.carta);
+			}}
+		>
+			{props.carta.valore + " di " + props.carta.seme}
+			{/* <img src={"../public/assets/carte/" + props.url}></img> */}
+			{/* <img src={immagine}></img> */}
 		</button>
 	);
 }

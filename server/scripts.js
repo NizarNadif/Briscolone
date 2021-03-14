@@ -24,6 +24,7 @@ function game(utenti, connessione) {
 }
 
 function sviluppoPartita(vincitore) {
+	users = Array.from(users.values());
 	vincitoreChiamata = vincitore;
 	i = giocatoreIniziale;
 	users.forEach((player) => {
@@ -105,20 +106,17 @@ function autorizza(id) {
 }
 
 function chiamata(valore) {
-	console.log(valore, attuale);
 	if (valore == null) {
 		chiamanti.splice(i, 1);
-		if (i == chiamanti.length)
-		i = 0;
-	}
-	else {
+		if (i == chiamanti.length) i = 0;
+	} else {
 		attuale = valore;
 		i = (i + 1) % chiamanti.length;
 	}
 	chiamanti.forEach((player) => {
 		console.log(player.id);
-	})
-	
+	});
+
 	if (chiamanti.length > 1) {
 		users.forEach((player) => {
 			player.emit("selezione chiamata", {
@@ -148,10 +146,11 @@ let primoTurno = true;
 let briscola = "";
 let punti = 0;
 
-function cartaGiocata(carta) {
-	turno.push(carta);
+function cartaGiocata(carta, cartaSocket) {
+	turno.push(cartaSocket);
 	if (turno.length == 5) {
 		let vincente = cartaVincente();
+		console.log("carta vincente:", vincente.url);
 		if (primoTurno) {
 			scegliBriscola();
 		}
@@ -161,8 +160,13 @@ function cartaGiocata(carta) {
 		turno = new Array();
 		punti = 0;
 	} else {
+		let j = i;
 		i = (i + 1) % 5;
-		io.emit("prossimo turno", { giocatore: users[i].id, carta: carta });
+		io.emit("prossimo a giocare", {
+			prossimo: users[i].id,
+			precedente: users[j].id,
+			carta: carta,
+		});
 	}
 }
 
@@ -184,7 +188,7 @@ function cartaVincente() {
 		punti += carta.punti;
 		if (carta.seme == briscola) {
 			if (vincente.seme == briscola) {
-				if (ordine.find(vincente.valore) > ordine.find(carta.valore)) {
+				if (ordine.indexOf(vincente.valore) > ordine.indexOf(carta.valore)) {
 					vincente = carta;
 				}
 			} else {
@@ -192,7 +196,7 @@ function cartaVincente() {
 			}
 		} else if (vincente.seme != briscola) {
 			if (vincente.seme == carta.seme) {
-				if (ordine.find(vincente.valore) > ordine.find(carta.valore)) {
+				if (ordine.indexOf(vincente.valore) > ordine.indexOf(carta.valore)) {
 					vincente = carta;
 				}
 			}
