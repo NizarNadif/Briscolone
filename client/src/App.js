@@ -3,6 +3,8 @@ import assets from "./carte";
 import { BarraChiamata } from "./componentiChiamata.js";
 import "./style.css";
 import api from "./api.js";
+import { Motion, spring } from "react-motion";
+
 const AppContext = React.createContext(null);
 
 export function App() {
@@ -88,14 +90,32 @@ export function Mano() {
 
 function Carta(props) {
 	return (
-		<img
-			className="carta"
-			alt={props.carta.valore + " di " + props.carta.seme}
-			src={assets[props.carta.url]}
-			onClick={() => {
-				api.giocaCarta(props.carta);
+		<Motion
+			defaultStyle={{ y: -40, opacity: 0 }}
+			style={{ y: spring(0), opacity: spring(1) }}
+		>
+			{(style) => {
+				return (
+					<img
+						style={{
+							opacity: style.opacity,
+							transform: `translateY(${style.y}px)`,
+							margin: "20px",
+							width: "100px",
+							border: "solid 1px black",
+							outline: "solid 8px white",
+							mozOutlineRadius: "5px",
+						}}
+						// className="carta"
+						alt={props.carta.valore + " di " + props.carta.seme}
+						src={assets[props.carta.url]}
+						onClick={() => {
+							api.giocaCarta(props.carta);
+						}}
+					/>
+				);
 			}}
-		></img>
+		</Motion>
 	);
 }
 
