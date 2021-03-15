@@ -40,3 +40,11 @@ export function prossimoTurno(callback) {
 		callback(yourCard, params.prossimo, params.carta);
 	});
 }
+
+export function scegliBriscola(callback) {
+	socket.on("scegli la briscola", () => callback());
+}
+
+export function briscolaScelta(briscola) {
+	socket.emit("briscola scelta", briscola);
+}

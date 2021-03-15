@@ -38,7 +38,8 @@ function cardsDistribution() {
 	deck = deck.sort(() => Math.random() - 0.5);
 	let indice = 0;
 	users.forEach((player) => {
-		const mano = deck.slice(indice, (indice += 8));
+		const mano = deck.slice(indice, indice + 8);
+		indice = indice+8;
 		player.emit("carteIniziali", mano);
 		mani.push(mano);
 	});
@@ -64,7 +65,7 @@ function deckGenerator() {
 			deck.push({
 				seme: semi[i],
 				valore: valori[j],
-				url: semi[i] + valori[j] + ".png",
+				url: semi[i] + valori[j],
 				punti: punti[j],
 			});
 }
@@ -72,23 +73,14 @@ function deckGenerator() {
 let chiamanti;
 let i;
 let attuale;
+let cartaChiamata = {
+	valore: '',
+	seme: '',
+}
 
 function call() {
 	chiamanti = Array.from(users.values());
-	let id = Array.from(users.keys());
 	console.log("Call");
-	let ordine = [
-		"Asso",
-		"Tre",
-		"Re",
-		"Cavallo",
-		"Fante",
-		"Sette",
-		"Sei",
-		"Cinque",
-		"Quattro",
-		"Due",
-	];
 	attuale = -1;
 
 	i = giocatoreIniziale;
@@ -133,8 +125,25 @@ function chiamata(valore) {
 			});
 			player.emit("inizio partita", {});
 		});
+		cartaChiamata['valore'] = indicizza(attuale);
 		sviluppoPartita(chiamanti[0]);
 	}
+}
+
+function indicizza(carta){
+	let ordine = [
+		"Asso",
+		"Tre",
+		"Re",
+		"Cavallo",
+		"Fante",
+		"Sette",
+		"Sei",
+		"Cinque",
+		"Quattro",
+		"Due",
+	];
+	return ordine[carta];
 }
 
 function checkTurno(id) {
@@ -142,23 +151,32 @@ function checkTurno(id) {
 }
 
 let turno = Array();
-let primoTurno = true;
+let turniEffettuati = 1;
 let briscola = "";
 let punti = 0;
+let sogliaVittoria = 61;
 
 function cartaGiocata(carta, cartaSocket) {
 	turno.push(cartaSocket);
 	if (turno.length == 5) {
 		let vincente = cartaVincente();
 		console.log("carta vincente:", vincente.url);
-		if (primoTurno) {
+		if (turniEffettuati == 1) {
 			scegliBriscola();
 		}
-		primoTurno = false;
-
 		vincente.giocatore["punti"] += punti;
 		turno = new Array();
 		punti = 0;
+		let j = i;
+		i = users.indexOf(vincente.giocatore);
+		io.emit("prossimo a giocare", {
+			prossimo: users[i].id,
+			precedente: users[j].id,
+			carta: carta,
+		});
+		turniEffettuati++;
+		if (turniEffettuati == 8)
+			finePartita();
 	} else {
 		let j = i;
 		i = (i + 1) % 5;
@@ -209,6 +227,25 @@ function scegliBriscola() {
 	vincitoreChiamata.emit("scegli la briscola", {});
 	vincitoreChiamata.on("briscola scelta", (briscolaScelta) => {
 		briscola = briscolaScelta;
+		cartaChiamata['seme'] = briscolaScelta;
 		console.log(briscola);
 	});
+}
+
+function finePartita(){
+	let socio;
+	mani.forEach((mano, index) => {
+		mano.forEach((carta) => {
+			if (carta.valore == cartaChiamata.valore && carta.seme == cartaChiamata.seme){
+				socio = index;
+			}
+		})
+	})
+	let puntiChiamanti = users[socio].punti;
+	if (users[socio] != vincitoreChiamata)
+		puntiChiamanti	+= vincitoreChiamata.punti;
+	let bool = 0;
+	if (puntiChiamanti >= sogliaVittoria) 
+		bool = 1;
+	io.emit("vincitore", { puntiChiamanti: puntiChiamanti, vittoriaChiamanti: bool});
 }

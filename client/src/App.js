@@ -1,5 +1,6 @@
 import React, { useReducer, useContext, useEffect } from "react";
-// import immaginiCarte from "../public/assets/carte";
+import assets from "./carte";
+console.log(assets);
 import { BarraChiamata } from "./componentiChiamata.js";
 import "./style.css";
 import {
@@ -9,7 +10,10 @@ import {
 	selezioneChiamata,
 	giocaCarta,
 	prossimoTurno,
+	scegliBriscola,
+	briscolaScelta,
 } from "./api.js";
+import carte from "./carte";
 const AppContext = React.createContext(null);
 
 export function App() {
@@ -47,6 +51,11 @@ export function App() {
 			console.log("Ultima carta giocata:", carta);
 			if (myCard) dispatch({ type: "rimuovi carta", payload: carta });
 		});
+
+		scegliBriscola(() => {
+			let classi = "selettoreBriscola appear";
+			document.getElementsByClassName("selettoreBriscola")[0].className = classi;
+		})
 	}, []);
 
 	return (
@@ -56,6 +65,7 @@ export function App() {
 				<PingButton />
 				<BarraChiamata attuale={state.attuale} />
 				<Carte />
+				<SelettoreBriscola />
 			</AppContext.Provider>
 		</div>
 	);
@@ -135,9 +145,25 @@ function Carta(props) {
 				giocaCarta(props.carta);
 			}}
 		>
-			{props.carta.valore + " di " + props.carta.seme}
+			{/*props.carta.valore + " di " + props.carta.seme*/}
 			{/* <img src={"../public/assets/carte/" + props.url}></img> */}
-			{/* <img src={immagine}></img> */}
+			{<img src={assets[props.carta.url]}></img>}
 		</button>
 	);
+}
+
+export function SelettoreBriscola(){
+	let semi = ["Coppe", "Spade", "Bastoni", "Denari"];
+	let briscoleJSX = semi.map((seme) => {
+		return <button 
+			onClick={() => {
+				briscolaScelta(seme);
+				let classi = "selettoreBriscola disappear";
+				document.getElementsByClassName("selettoreBriscola")[0].className = classi;
+			}}
+		>
+			{seme}
+		</button>
+	})
+	return <div className="selettoreBriscola disappear">{briscoleJSX}</div>
 }
