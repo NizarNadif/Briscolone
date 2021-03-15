@@ -24,10 +24,6 @@ io.on("connection", (client) => {
 			scripts.game(users, io);
 		}
 	}
-	client.on("ping", () => {
-		console.log("ping from client");
-		//client.emit("pong", {});
-	});
 
 	client.on("disconnect", () => {
 		console.log("client ", client.id, "disconnected");
@@ -35,7 +31,6 @@ io.on("connection", (client) => {
 	});
 
 	client.on("chiamata", (chiamata) => {
-		console.log("chiamata di", client.id, ":", chiamata);
 		if (scripts.autorizza(client.id)) {
 			scripts.chiamata(chiamata);
 		}
@@ -43,7 +38,6 @@ io.on("connection", (client) => {
 
 	client.on("carta giocata", (carta) => {
 		if (scripts.checkTurno(client.id)) {
-			console.log(carta);
 			let temp = { ...carta };
 			carta["giocatore"] = client;
 			scripts.cartaGiocata(temp, carta);
