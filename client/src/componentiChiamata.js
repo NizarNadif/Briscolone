@@ -18,7 +18,12 @@ export function BarraChiamata(params) {
 
 	let pulsantiJSX = ordine.map((nome, index) => {
 		return (
-			<PulsanteChiamata nome={nome} valore={index} attuale={params.attuale} />
+			<PulsanteChiamata
+				key={index}
+				nome={nome}
+				valore={index}
+				attuale={params.attuale}
+			/>
 		);
 	});
 

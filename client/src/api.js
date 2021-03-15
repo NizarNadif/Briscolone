@@ -1,6 +1,16 @@
 import openSocket from "socket.io-client";
 const socket = openSocket("http://localhost:4321");
 
+export default {
+	carteIniziali,
+	selezioneChiamata,
+	invia,
+	giocaCarta,
+	prossimoTurno,
+	scegliBriscola,
+	briscolaScelta,
+};
+
 socket.on("connect", () => {
 	console.log("connessione...");
 });

@@ -1,31 +1,24 @@
 import React, { useReducer, useContext, useEffect } from "react";
 import assets from "./carte";
-console.log(assets);
 import { BarraChiamata } from "./componentiChiamata.js";
 import "./style.css";
-import {
-	carteIniziali,
-	selezioneChiamata,
-	giocaCarta,
-	prossimoTurno,
-	scegliBriscola,
-	briscolaScelta,
-} from "./api.js";
+import api from "./api.js";
 const AppContext = React.createContext(null);
 
 export function App() {
 	const [state, dispatch] = useReducer(reducer, {
 		carte: new Array(),
 		attuale: 0,
+		dynamicComoponents: new Array(),
 	});
 
 	useEffect(() => {
-		carteIniziali((carte) => {
+		api.carteIniziali((carte) => {
 			console.log(carte);
 			dispatch({ type: "carte", payload: carte });
 		});
 
-		selezioneChiamata((attuale, chiamante) => {
+		api.selezioneChiamata((attuale, chiamante) => {
 			console.log("selezione chiamata", attuale);
 			let classi = "barra_chiamata ";
 			if (chiamante) {
@@ -36,24 +29,25 @@ export function App() {
 			dispatch({ type: "chiamata attuale", payload: attuale });
 		});
 
-		prossimoTurno((myCard, prossimo, carta) => {
+		api.prossimoTurno((myCard, prossimo, carta) => {
 			console.log("Prossimo a giocare:", prossimo);
 			console.log("Ultima carta giocata:", carta);
 			if (myCard) dispatch({ type: "rimuovi carta", payload: carta });
 		});
 
-		scegliBriscola(() => {
+		api.scegliBriscola(() => {
 			let classi = "selettoreBriscola appear";
 			document.getElementsByClassName("selettoreBriscola")[0].className = classi;
-		})
+		});
 	}, []);
 
+	let components = state.dynamicComoponents;
 	return (
 		<div className="ping-zone">
 			<AppContext.Provider value={{ state, dispatch }}>
 				<BarraChiamata attuale={state.attuale} />
 				<SelettoreBriscola />
-				<Carte />
+				<Mano />
 			</AppContext.Provider>
 		</div>
 	);
@@ -64,6 +58,7 @@ function reducer(state, action) {
 	switch (action.type) {
 		case "carte":
 			newState.carte = action.payload;
+			newState.dynamicComoponents.push(<Mano />);
 			break;
 		case "chiamata attuale":
 			newState.attuale = action.payload;
@@ -81,11 +76,11 @@ function reducer(state, action) {
 	return newState;
 }
 
-export function Carte() {
+export function Mano() {
 	const { state, dispatch } = useContext(AppContext);
 
-	let manoJSX = state.carte.map((carta) => {
-		return <Carta carta={carta} />;
+	let manoJSX = state.carte.map((carta, index) => {
+		return <Carta key={index} carta={carta} />;
 	});
 
 	return <div className="mano">{manoJSX}</div>;
@@ -93,29 +88,32 @@ export function Carte() {
 
 function Carta(props) {
 	return (
-		<button
+		<img
+			className="carta"
+			alt={props.carta.valore + " di " + props.carta.seme}
+			src={assets[props.carta.url]}
 			onClick={() => {
-				giocaCarta(props.carta);
+				api.giocaCarta(props.carta);
 			}}
-		>
-			{/*props.carta.valore + " di " + props.carta.seme*/}
-			{<img src={assets[props.carta.url]}></img>}
-		</button>
+		></img>
 	);
 }
 
-export function SelettoreBriscola(){
+export function SelettoreBriscola() {
 	let semi = ["Coppe", "Spade", "Bastoni", "Denari"];
-	let briscoleJSX = semi.map((seme) => {
-		return <button 
-			onClick={() => {
-				briscolaScelta(seme);
-				let classi = "selettoreBriscola disappear";
-				document.getElementsByClassName("selettoreBriscola")[0].className = classi;
-			}}
-		>
-			{seme}
-		</button>
-	})
-	return <div className="selettoreBriscola disappear">{briscoleJSX}</div>
+	let briscoleJSX = semi.map((seme, index) => {
+		return (
+			<button
+				key={index}
+				onClick={() => {
+					api.briscolaScelta(seme);
+					let classi = "selettoreBriscola disappear";
+					document.getElementsByClassName("selettoreBriscola")[0].className = classi;
+				}}
+			>
+				{seme}
+			</button>
+		);
+	});
+	return <div className="selettoreBriscola disappear">{briscoleJSX}</div>;
 }
