@@ -4,8 +4,6 @@ console.log(assets);
 import { BarraChiamata } from "./componentiChiamata.js";
 import "./style.css";
 import {
-	ping,
-	pong,
 	carteIniziali,
 	selezioneChiamata,
 	giocaCarta,
@@ -13,23 +11,15 @@ import {
 	scegliBriscola,
 	briscolaScelta,
 } from "./api.js";
-import carte from "./carte";
 const AppContext = React.createContext(null);
 
 export function App() {
 	const [state, dispatch] = useReducer(reducer, {
-		ping: 0,
-		pong: 0,
-		registroAzioni: new Array(),
 		carte: new Array(),
 		attuale: 0,
 	});
 
 	useEffect(() => {
-		pong((type) => {
-			console.log("pong arrivato");
-			dispatch({ type: type });
-		});
 		carteIniziali((carte) => {
 			console.log(carte);
 			dispatch({ type: "carte", payload: carte });
@@ -61,11 +51,9 @@ export function App() {
 	return (
 		<div className="ping-zone">
 			<AppContext.Provider value={{ state, dispatch }}>
-				<DataWindow />
-				<PingButton />
 				<BarraChiamata attuale={state.attuale} />
-				<Carte />
 				<SelettoreBriscola />
+				<Carte />
 			</AppContext.Provider>
 		</div>
 	);
@@ -74,14 +62,6 @@ export function App() {
 function reducer(state, action) {
 	let newState = { ...state };
 	switch (action.type) {
-		case "ping":
-			newState.ping = state.ping++;
-			newState.registroAzioni = [...state.registroAzioni, "ping"];
-			break;
-		case "pong":
-			newState.pong = state.pong++;
-			newState.registroAzioni = [...state.registroAzioni, "pong"];
-			break;
 		case "carte":
 			newState.carte = action.payload;
 			break;
@@ -101,32 +81,6 @@ function reducer(state, action) {
 	return newState;
 }
 
-export function DataWindow(props) {
-	const { state, dispatch } = useContext(AppContext);
-
-	return (
-		<div className="data-window">
-			<h1>pings sent: {state.ping}</h1>
-			<h1>pongs received: {state.pong}</h1>
-		</div>
-	);
-}
-
-export function PingButton(props) {
-	const { state, dispatch } = useContext(AppContext);
-
-	return (
-		<button
-			onClick={() => {
-				ping();
-				dispatch({ type: "ping" });
-			}}
-		>
-			PING
-		</button>
-	);
-}
-
 export function Carte() {
 	const { state, dispatch } = useContext(AppContext);
 
@@ -138,7 +92,6 @@ export function Carte() {
 }
 
 function Carta(props) {
-	// const immagine = require("../public/assets/carte/" + props.url);
 	return (
 		<button
 			onClick={() => {
@@ -146,7 +99,6 @@ function Carta(props) {
 			}}
 		>
 			{/*props.carta.valore + " di " + props.carta.seme*/}
-			{/* <img src={"../public/assets/carte/" + props.url}></img> */}
 			{<img src={assets[props.carta.url]}></img>}
 		</button>
 	);

@@ -14,7 +14,6 @@ let giocatoreIniziale = 0;
 let vincitoreChiamata;
 
 function game(utenti, connessione) {
-	//io.emit("pong", {});
 	users = utenti;
 	io = connessione;
 
@@ -80,7 +79,6 @@ let cartaChiamata = {
 
 function call() {
 	chiamanti = Array.from(users.values());
-	console.log("Call");
 	attuale = -1;
 
 	i = giocatoreIniziale;
@@ -105,9 +103,6 @@ function chiamata(valore) {
 		attuale = valore;
 		i = (i + 1) % chiamanti.length;
 	}
-	chiamanti.forEach((player) => {
-		console.log(player.id);
-	});
 
 	if (chiamanti.length > 1) {
 		users.forEach((player) => {
@@ -117,11 +112,10 @@ function chiamata(valore) {
 			});
 		});
 	} else {
-		console.log("ce l'abbiamo fatta!");
 		users.forEach((player) => {
 			player.emit("selezione chiamata", {
 				attuale: attuale,
-				chiamante: "ahaha non vali niente",
+				chiamante: "RandomID",
 			});
 			player.emit("inizio partita", {});
 		});
@@ -160,7 +154,7 @@ function cartaGiocata(carta, cartaSocket) {
 	turno.push(cartaSocket);
 	if (turno.length == 5) {
 		let vincente = cartaVincente();
-		console.log("carta vincente:", vincente.url);
+		//console.log("carta vincente:", vincente.url);
 		if (turniEffettuati == 1) {
 			scegliBriscola();
 		}

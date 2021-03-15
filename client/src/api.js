@@ -5,14 +5,6 @@ socket.on("connect", () => {
 	console.log("connessione...");
 });
 
-export function ping() {
-	socket.emit("ping", {});
-}
-
-export function pong(callback) {
-	socket.on("pong", () => callback("pong"));
-}
-
 export function carteIniziali(callback) {
 	socket.on("carteIniziali", (carte) => callback(carte));
 }
