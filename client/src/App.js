@@ -1,9 +1,9 @@
 import React, { useReducer, useContext, useEffect } from "react";
+import { Motion, spring } from "react-motion";
 import assets from "./carte";
 import { BarraChiamata } from "./componentiChiamata.js";
 import "./style.css";
 import api from "./api.js";
-import { Motion, spring } from "react-motion";
 
 const AppContext = React.createContext(null);
 
@@ -12,6 +12,7 @@ export function App() {
 		carte: new Array(),
 		attuale: 0,
 		dynamicComoponents: new Array(),
+		callingPhase: true,
 	});
 
 	useEffect(() => {
@@ -22,13 +23,8 @@ export function App() {
 
 		api.selezioneChiamata((attuale, chiamante) => {
 			console.log("selezione chiamata", attuale);
-			let classi = "barra_chiamata ";
-			if (chiamante) {
-				console.log("tocca a te!");
-				classi += "appear";
-			} else classi += "disappear";
-			document.getElementsByClassName("barra_chiamata")[0].className = classi;
 			dispatch({ type: "chiamata attuale", payload: attuale });
+			toggle(chiamante); // chiamante ? toggle : untoggle
 		});
 
 		api.prossimoTurno((myCard, prossimo, carta) => {
@@ -45,14 +41,27 @@ export function App() {
 
 	let components = state.dynamicComoponents;
 	return (
-		<div className="ping-zone">
-			<AppContext.Provider value={{ state, dispatch }}>
-				<BarraChiamata attuale={state.attuale} />
-				<SelettoreBriscola />
-				<Mano />
-			</AppContext.Provider>
-		</div>
+		<AppContext.Provider value={{ state, dispatch }}>
+			<BarraChiamata attuale={state.attuale} />
+			<SelettoreBriscola />
+			<Mano />
+		</AppContext.Provider>
 	);
+}
+
+function toggle(doBlur) {
+	var blur = document.getElementsByClassName("blur");
+
+	for (var i = 0; i < blur.length; i++) {
+		blur[i].classList.toggle(doBlur ? "active" : "unactive");
+	}
+
+	document
+		.getElementByClassName("barra-chiamata")[0]
+		.toggle(doBlur ? "active" : "unactive");
+
+	/* var popup = document.getElementById("barra-chiamata");
+	popup.classList.toggle("active"); */
 }
 
 function reducer(state, action) {
@@ -85,13 +94,13 @@ export function Mano() {
 		return <Carta key={index} carta={carta} />;
 	});
 
-	return <div className="mano">{manoJSX}</div>;
+	return <div className="mano blur">{manoJSX}</div>;
 }
 
 function Carta(props) {
 	return (
 		<Motion
-			defaultStyle={{ y: -40, opacity: 0 }}
+			defaultStyle={{ y: +300, opacity: 0 }}
 			style={{ y: spring(0), opacity: spring(1) }}
 		>
 			{(style) => {
@@ -100,13 +109,8 @@ function Carta(props) {
 						style={{
 							opacity: style.opacity,
 							transform: `translateY(${style.y}px)`,
-							margin: "20px",
-							width: "100px",
-							border: "solid 1px black",
-							outline: "solid 8px white",
-							mozOutlineRadius: "5px",
 						}}
-						// className="carta"
+						className="carta"
 						alt={props.carta.valore + " di " + props.carta.seme}
 						src={assets[props.carta.url]}
 						onClick={() => {
