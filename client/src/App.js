@@ -10,7 +10,7 @@ const AppContext = React.createContext(null);
 export function App() {
 	const [state, dispatch] = useReducer(reducer, {
 		carte: new Array(),
-		attuale: 0,
+		attuale: {valore: 0, soglia: 61},
 		dynamicComoponents: new Array(),
 		callingPhase: true,
 	});
@@ -22,7 +22,7 @@ export function App() {
 		});
 
 		api.selezioneChiamata((attuale, chiamante) => {
-			console.log("selezione chiamata", attuale);
+			console.log("selezione chiamata", attuale.valore);
 			dispatch({ type: "chiamata attuale", payload: attuale });
 			toggle(chiamante); // chiamante ? toggle : untoggle
 		});

@@ -1,7 +1,6 @@
 import React from "react";
 import { Motion, spring } from "react-motion";
 import api from "./api";
-import { verificaChiamata } from "./rules";
 
 export function BarraChiamata(props) {
 	let ordine = [
@@ -25,6 +24,7 @@ export function BarraChiamata(props) {
 				valore={index}
 				attuale={props.attuale}
 			/>
+			
 		);
 	});
 	return (
@@ -53,6 +53,8 @@ export function BarraChiamata(props) {
 						>
 							non chiamare
 						</button>
+
+						<input type="text" id="soglia" placeholder="scegli una soglia"/>
 					</div>
 				);
 			}}
@@ -69,7 +71,12 @@ function PulsanteChiamata(props) {
 			}}
 			className="pulsante-chiamata"
 			onClick={() => {
-				api.invia(props.valore);
+				let soglia = document.getElementById("soglia").innerText;
+				if (soglia <= props.attuale.soglia)
+					api.invia({
+						valore: props.valore,
+						soglia: soglia,
+					});
 			}}
 		>
 			{props.nome}

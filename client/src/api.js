@@ -15,35 +15,35 @@ socket.on("connect", () => {
 	console.log("connessione...");
 });
 
-export function carteIniziali(callback) {
+function carteIniziali(callback) {
 	socket.on("carteIniziali", (carte) => callback(carte));
 }
 
-export function selezioneChiamata(callback) {
+function selezioneChiamata(callback) {
 	socket.on("selezione chiamata", (params) => {
 		callback(params.attuale, socket.id == params.chiamante);
 	});
 }
 
-export function invia(chiamata) {
-	console.log("hai chiamato", chiamata);
+function invia(chiamata) {
+	console.log("hai chiamato", chiamata.valore, " soglia: ", chiamata.soglia);
 	socket.emit("chiamata", chiamata);
 }
 
-export function giocaCarta(carta) {
+function giocaCarta(carta) {
 	socket.emit("carta giocata", carta);
 }
 
-export function prossimoTurno(callback) {
+function prossimoTurno(callback) {
 	socket.on("prossimo a giocare", (params) => {
 		callback(params.precedente == socket.id, params.prossimo, params.carta);
 	});
 }
 
-export function scegliBriscola(callback) {
+function scegliBriscola(callback) {
 	socket.on("scegli la briscola", () => callback());
 }
 
-export function briscolaScelta(briscola) {
+function briscolaScelta(briscola) {
 	socket.emit("briscola scelta", briscola);
 }
