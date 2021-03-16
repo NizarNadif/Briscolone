@@ -21,9 +21,7 @@ export function carteIniziali(callback) {
 
 export function selezioneChiamata(callback) {
 	socket.on("selezione chiamata", (params) => {
-		console.log(params);
-		if (socket.id == params.chiamante) callback(params.attuale, 1);
-		else callback(params.attuale, 0);
+		callback(params.attuale, socket.id == params.chiamante);
 	});
 }
 
@@ -38,8 +36,7 @@ export function giocaCarta(carta) {
 
 export function prossimoTurno(callback) {
 	socket.on("prossimo a giocare", (params) => {
-		let yourCard = params.precedente == socket.id;
-		callback(yourCard, params.prossimo, params.carta);
+		callback(params.precedente == socket.id, params.prossimo, params.carta);
 	});
 }
 

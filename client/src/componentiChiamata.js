@@ -1,7 +1,9 @@
 import React from "react";
+import { Motion, spring } from "react-motion";
+import api from "./api";
 import { verificaChiamata } from "./rules";
 
-export function BarraChiamata(params) {
+export function BarraChiamata(props) {
 	let ordine = [
 		"Asso",
 		"Tre",
@@ -13,7 +15,6 @@ export function BarraChiamata(params) {
 		"Cinque",
 		"Quattro",
 		"Due",
-		"non chiamare",
 	];
 
 	let pulsantiJSX = ordine.map((nome, index) => {
@@ -22,26 +23,53 @@ export function BarraChiamata(params) {
 				key={index}
 				nome={nome}
 				valore={index}
-				attuale={params.attuale}
+				attuale={props.attuale}
 			/>
 		);
 	});
-
 	return (
-		<div className="barra_chiamata disappear">
-			<p>ultima chiamata: {params.attuale}</p>
-			{pulsantiJSX}
-		</div>
+		<Motion
+			defaultStyle={{ slidePercentage: 0, opacity: 0 }}
+			style={{ slidePercentage: spring(50), opacity: spring(1) }}
+		>
+			{(style) => {
+				return (
+					<div
+						style={{
+							top: `${style.slidePercentage}%`,
+							left: `${style.slidePercentage}%`,
+							transform: `translate(-${style.slidePercentage}%, -${style.slidePercentage}%)`,
+							opacity: style.opacity,
+						}}
+						className="barra-chiamata"
+					>
+						<p style={{ fontWeight: "bold" }}>Ultima chiamata: {props.attuale}</p>
+						{pulsantiJSX}
+						<button
+							className="pulsante-non-chiamare"
+							onClick={() => {
+								api.invia(null);
+							}}
+						>
+							non chiamare
+						</button>
+					</div>
+				);
+			}}
+		</Motion>
 	);
 }
 
 function PulsanteChiamata(props) {
-	let value = props.valore;
-	if (props.valore == 10) value = "null";
+	// let allowed = props.attuale <= props.valore ? "not-allowed" : "allowed";
 	return (
 		<button
+			style={{
+				visibility: `${props.attuale >= props.valore ? "hidden" : "visible"}`,
+			}}
+			className="pulsante-chiamata"
 			onClick={() => {
-				verificaChiamata(props.attuale, value);
+				api.invia(props.valore);
 			}}
 		>
 			{props.nome}
