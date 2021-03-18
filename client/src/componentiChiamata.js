@@ -27,16 +27,16 @@ export function BarraChiamata(props) {
 	});
 	return (
 		<Motion
-			defaultStyle={{ slidePercentage: 0, opacity: 0 }}
-			style={{ slidePercentage: spring(50), opacity: spring(1) }}
+			defaultStyle={{ top: 0, left: 0, opacity: 0 }}
+			style={{ top: spring(40), left: spring(50), opacity: spring(1) }}
 		>
 			{(style) => {
 				return (
 					<div
 						style={{
-							top: `${style.slidePercentage}%`,
-							left: `${style.slidePercentage}%`,
-							transform: `translate(-${style.slidePercentage}%, -${style.slidePercentage}%)`,
+							top: `${style.top}%`,
+							left: `${style.left}%`,
+							transform: `translate(-${style.left}%, -${style.left}%)`,
 							opacity: style.opacity,
 						}}
 						id="barra-chiamata"
