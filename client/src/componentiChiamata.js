@@ -15,7 +15,6 @@ export function BarraChiamata(props) {
 		"Quattro",
 		"Due",
 	];
-
 	let pulsantiJSX = ordine.map((nome, index) => {
 		return (
 			<PulsanteChiamata
@@ -41,10 +40,14 @@ export function BarraChiamata(props) {
 							opacity: style.opacity,
 						}}
 						id="barra-chiamata"
+						className="hidden"
 					>
 						<p style={{ fontWeight: "bold" }}>
-							Ultima chiamata:{" "}
-							{props.attuale.valore >= 0 ? ordine[props.attuale.valore] : ""}
+							{props.attuale.valore >= 0
+								? "Ultima chiamata: " +
+								  ordine[props.attuale.valore].toLocaleLowerCase() +
+								  (props.attuale.soglia > 61 ? " a " + props.attuale.soglia : "")
+								: "Sei il primo chiamante"}
 						</p>
 						{pulsantiJSX}
 						<button
@@ -59,7 +62,7 @@ export function BarraChiamata(props) {
 							non chiamare
 						</button>
 
-						<input type="text" id="soglia" placeholder="scegli una soglia" />
+						<SliderSoglia attuale={props.attuale} />
 					</div>
 				);
 			}}
@@ -68,22 +71,53 @@ export function BarraChiamata(props) {
 }
 
 function PulsanteChiamata(props) {
-	// let allowed = props.attuale <= props.valore ? "not-allowed" : "allowed";
 	return (
 		<button
 			className={`pulsante-chiamata${
-				props.attuale.valore >= props.valore ? " disabled" : ""
+				props.attuale.valore >= props.valore && props.valore != 9 ? " disabled" : ""
 			}`}
 			onClick={() => {
-				let soglia = document.getElementById("soglia").value;
-				if (soglia <= props.attuale.soglia)
+				let soglia = parseInt(document.getElementById("soglia").value);
+				console.log(soglia);
+				if (props.attuale.valore == props.valore && props.valore == 9) {
+					if (soglia > props.attuale.soglia)
+						api.invia({
+							valore: props.valore,
+							soglia: soglia,
+						});
+				} else {
 					api.invia({
 						valore: props.valore,
-						soglia: 61,
+						soglia: props.attuale.soglia,
 					});
+				}
 			}}
 		>
 			{props.nome}
 		</button>
+	);
+}
+
+function SliderSoglia(props) {
+	return (
+		<div id="slider-soglia-contenitore" className="hidden">
+			<input
+				type="range"
+				min={(props.attuale.soglia + 1).toString(10)}
+				max="120"
+				/* value={(props.attuale.soglia + 1).toString(10)} */
+				id="soglia"
+				step="1"
+				onInput={(nuovaSoglia) => {
+					document.getElementById("valoreSoglia").innerText =
+						nuovaSoglia.target.valueAsNumber;
+				}}
+			/>
+			<small id="valoreSoglia">
+				{document.getElementById("soglia") == null
+					? ""
+					: document.getElementById("soglia").value}
+			</small>
+		</div>
 	);
 }

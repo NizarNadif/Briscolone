@@ -10,9 +10,7 @@ const AppContext = React.createContext(null);
 export function App() {
 	const [state, dispatch] = useReducer(reducer, {
 		carte: new Array(),
-		attuale: { valore: 0, soglia: 61 },
-		dynamicComoponents: new Array(),
-		callingPhase: true,
+		attuale: { valore: -1, soglia: 61 },
 	});
 
 	useEffect(() => {
@@ -24,6 +22,14 @@ export function App() {
 		api.selezioneChiamata((attuale, chiamante) => {
 			console.log("selezione chiamata", attuale);
 			dispatch({ type: "chiamata attuale", payload: attuale });
+			if (attuale.valore == 9)
+				document
+					.getElementById("slider-soglia-contenitore")
+					.classList.remove("hidden");
+			else
+				document
+					.getElementById("slider-soglia-contenitore")
+					.classList.add("hidden");
 			toggle(chiamante); // chiamante ? toggle : untoggle
 		});
 
@@ -34,12 +40,10 @@ export function App() {
 		});
 
 		api.scegliBriscola(() => {
-			let classi = "selettoreBriscola appear";
-			document.getElementsByClassName("selettoreBriscola")[0].className = classi;
+			document.getElementById("selettore-briscola").classList.remove("hidden");
 		});
 	}, []);
 
-	let components = state.dynamicComoponents;
 	return (
 		<AppContext.Provider value={{ state, dispatch }}>
 			<BarraChiamata attuale={state.attuale} />
@@ -53,11 +57,9 @@ export function toggle(doBlur) {
 	console.log("blur:", doBlur);
 	var daSfocare = [document.getElementsByClassName("mano")[0]];
 
-	for (var i = 0; i < daSfocare.length; i++) {
-		doBlur
-			? daSfocare[i].classList.add("blur")
-			: daSfocare[i].classList.remove("blur");
-	}
+	daSfocare.forEach((element) => {
+		doBlur ? element.classList.add("blur") : element.classList.remove("blur");
+	});
 
 	const classiBarra = document.getElementById("barra-chiamata").classList;
 	doBlur ? classiBarra.remove("hidden") : classiBarra.add("hidden");
@@ -68,7 +70,6 @@ function reducer(state, action) {
 	switch (action.type) {
 		case "carte":
 			newState.carte = action.payload;
-			newState.dynamicComoponents.push(<Mano />);
 			break;
 		case "chiamata attuale":
 			newState.attuale = action.payload;
@@ -82,7 +83,7 @@ function reducer(state, action) {
 		default:
 			break;
 	}
-	console.log(newState);
+	console.log("stato", newState);
 	return newState;
 }
 
@@ -130,13 +131,16 @@ export function SelettoreBriscola() {
 				key={index}
 				onClick={() => {
 					api.briscolaScelta(seme);
-					let classi = "selettoreBriscola disappear";
-					document.getElementsByClassName("selettoreBriscola")[0].className = classi;
+					document.getElementById("selettore-briscola").classList.add("hidden");
 				}}
 			>
 				{seme}
 			</button>
 		);
 	});
-	return <div className="selettoreBriscola disappear">{briscoleJSX}</div>;
+	return (
+		<div id="selettore-briscola" className="hidden">
+			{briscoleJSX}
+		</div>
+	);
 }

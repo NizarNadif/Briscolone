@@ -104,12 +104,15 @@ function chiamata(chiamata) {
 	if (chiamata.valore == null) {
 		chiamanti.splice(i, 1);
 		if (i == chiamanti.length) i = 0;
-	} else {
-		ultimaChiamata.valore = chiamata.valore;
+	} else if (
+		chiamata.valore >= ultimaChiamata.valore &&
+		chiamata.soglia >= ultimaChiamata.soglia
+	) {
+		ultimaChiamata = chiamata;
 		i = (i + 1) % chiamanti.length;
 	}
 
-	if (chiamanti.length > 1) {
+	if (chiamanti.length > 1 && ultimaChiamata.soglia < 120) {
 		users.forEach((player) => {
 			player.emit("selezione chiamata", {
 				attuale: ultimaChiamata,
