@@ -10,7 +10,7 @@ const AppContext = React.createContext(null);
 export function App() {
 	const [state, dispatch] = useReducer(reducer, {
 		carte: new Array(),
-		attuale: {valore: 0, soglia: 61},
+		attuale: { valore: 0, soglia: 61 },
 		dynamicComoponents: new Array(),
 		callingPhase: true,
 	});
@@ -22,7 +22,7 @@ export function App() {
 		});
 
 		api.selezioneChiamata((attuale, chiamante) => {
-			console.log("selezione chiamata", attuale.valore);
+			console.log("selezione chiamata", attuale);
 			dispatch({ type: "chiamata attuale", payload: attuale });
 			toggle(chiamante); // chiamante ? toggle : untoggle
 		});
@@ -49,19 +49,18 @@ export function App() {
 	);
 }
 
-function toggle(doBlur) {
-	var blur = document.getElementsByClassName("blur");
+export function toggle(doBlur) {
+	console.log("blur:", doBlur);
+	var daSfocare = [document.getElementsByClassName("mano")[0]];
 
-	for (var i = 0; i < blur.length; i++) {
-		blur[i].classList.toggle(doBlur ? "active" : "unactive");
+	for (var i = 0; i < daSfocare.length; i++) {
+		doBlur
+			? daSfocare[i].classList.add("blur")
+			: daSfocare[i].classList.remove("blur");
 	}
 
-	document
-		.getElementByClassName("barra-chiamata")[0]
-		.toggle(doBlur ? "active" : "unactive");
-
-	/* var popup = document.getElementById("barra-chiamata");
-	popup.classList.toggle("active"); */
+	const classiBarra = document.getElementById("barra-chiamata").classList;
+	doBlur ? classiBarra.remove("hidden") : classiBarra.add("hidden");
 }
 
 function reducer(state, action) {
@@ -94,7 +93,7 @@ export function Mano() {
 		return <Carta key={index} carta={carta} />;
 	});
 
-	return <div className="mano blur">{manoJSX}</div>;
+	return <div className="mano">{manoJSX}</div>;
 }
 
 function Carta(props) {

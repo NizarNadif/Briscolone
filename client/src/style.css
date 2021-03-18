@@ -9,27 +9,6 @@ body {
 	font-family: sans-serif;
 }
 
-.appear {
-	visibility: visible;
-}
-
-.disappear {
-	visibility: hidden;
-}
-
-.blur.active {
-    filter: blur(2px);
-    pointer-events: none;
-    user-select: none;
-}
-
-.blur.unactive {
-    filter: none;
-    pointer-events: all;
-    user-select: all;
-}
-
-
 .mano {
 	justify-content: flex-end;
     display: flex;
@@ -50,7 +29,7 @@ body {
 		0 41.8px 33.4px rgba(0, 0, 0, 0.086), 0 100px 80px rgba(0, 0, 0, 0.12);
 }
 
-.barra-chiamata {
+#barra-chiamata {
 	position: fixed;
 	z-index: 99;
 	box-shadow: 0 2.8px 2.2px rgba(0, 0, 0, 0.034), 0 6.7px 5.3px rgba(0, 0, 0, 0.048), 0 12.5px 10px rgba(0, 0, 0, 0.06), 0 22.3px 17.9px rgba(0, 0, 0, 0.072), 0 41.8px 33.4px rgba(0, 0, 0, 0.086), 0 100px 80px rgba(0, 0, 0, 0.12);
@@ -65,16 +44,17 @@ body {
 	/* visibility: hidden; */
 }
 
-.barra-chiamata.unactive {
+
+.blur {
+	filter: blur(2px);
+    pointer-events: none;
+    user-select: none;
+}
+
+.hidden {
 	visibility: hidden;
 	pointer-events: none;
 	user-select: none;
-}
-
-.barra-chiamata.active {
-	visibility: visible;
-	pointer-events: all;
-	user-select: all;
 }
 
 .pulsante-chiamata {
@@ -113,4 +93,13 @@ body {
 	color: red;
 	background-color: white;
 	border-color: red;
+}
+
+.disabled {
+	pointer-events: none;
+	cursor: not-allowed;
+	opacity: 0.65;
+	filter: alpha(opacity=65);
+	-webkit-box-shadow: none;
+	box-shadow: none;
 }

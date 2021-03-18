@@ -24,7 +24,6 @@ export function BarraChiamata(props) {
 				valore={index}
 				attuale={props.attuale}
 			/>
-			
 		);
 	});
 	return (
@@ -41,20 +40,26 @@ export function BarraChiamata(props) {
 							transform: `translate(-${style.slidePercentage}%, -${style.slidePercentage}%)`,
 							opacity: style.opacity,
 						}}
-						className="barra-chiamata"
+						id="barra-chiamata"
 					>
-						<p style={{ fontWeight: "bold" }}>Ultima chiamata: {props.attuale}</p>
+						<p style={{ fontWeight: "bold" }}>
+							Ultima chiamata:{" "}
+							{props.attuale.valore >= 0 ? ordine[props.attuale.valore] : ""}
+						</p>
 						{pulsantiJSX}
 						<button
 							className="pulsante-non-chiamare"
 							onClick={() => {
-								api.invia(null);
+								api.invia({
+									valore: null,
+									soglia: props.attuale.soglia,
+								});
 							}}
 						>
 							non chiamare
 						</button>
 
-						<input type="text" id="soglia" placeholder="scegli una soglia"/>
+						<input type="text" id="soglia" placeholder="scegli una soglia" />
 					</div>
 				);
 			}}
@@ -66,16 +71,15 @@ function PulsanteChiamata(props) {
 	// let allowed = props.attuale <= props.valore ? "not-allowed" : "allowed";
 	return (
 		<button
-			style={{
-				visibility: `${props.attuale >= props.valore ? "hidden" : "visible"}`,
-			}}
-			className="pulsante-chiamata"
+			className={`pulsante-chiamata${
+				props.attuale.valore >= props.valore ? " disabled" : ""
+			}`}
 			onClick={() => {
-				let soglia = document.getElementById("soglia").innerText;
+				let soglia = document.getElementById("soglia").value;
 				if (soglia <= props.attuale.soglia)
 					api.invia({
 						valore: props.valore,
-						soglia: soglia,
+						soglia: 61,
 					});
 			}}
 		>

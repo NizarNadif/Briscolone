@@ -21,7 +21,15 @@ function carteIniziali(callback) {
 
 function selezioneChiamata(callback) {
 	socket.on("selezione chiamata", (params) => {
-		callback(params.attuale, socket.id == params.chiamante);
+		console.log(
+			"il tuo id:",
+			socket.id,
+			"id chiamante:",
+			params.chiamante,
+			"uguali:",
+			socket.id == params.chiamante
+		);
+		callback(params.attuale, socket.id === params.chiamante);
 	});
 }
 
