@@ -30,7 +30,11 @@ export function App() {
 				document
 					.getElementById("slider-soglia-contenitore")
 					.classList.add("hidden");
-			toggle(chiamante); // chiamante ? toggle : untoggle
+			blur(
+				chiamante,
+				[document.getElementsByClassName("mano")[0]],
+				"popup-chiamata"
+			); // chiamante ? toggle : untoggle
 		});
 
 		api.prossimoTurno((myCard, prossimo, carta) => {
@@ -46,23 +50,25 @@ export function App() {
 
 	return (
 		<AppContext.Provider value={{ state, dispatch }}>
-			<BarraChiamata attuale={state.attuale} />
+			<Popup
+				elementJSX={<BarraChiamata attuale={state.attuale} />}
+				id="popup-chiamata"
+			/>
 			<SelettoreBriscola />
 			<Mano />
 		</AppContext.Provider>
 	);
 }
 
-export function toggle(doBlur) {
+export function blur(doBlur, arrayBlur, popupID) {
 	console.log("blur:", doBlur);
-	var daSfocare = [document.getElementsByClassName("mano")[0]];
 
-	daSfocare.forEach((element) => {
+	arrayBlur.forEach((element) => {
 		doBlur ? element.classList.add("blur") : element.classList.remove("blur");
 	});
 
-	const classiBarra = document.getElementById("barra-chiamata").classList;
-	doBlur ? classiBarra.remove("hidden") : classiBarra.add("hidden");
+	const popupClasses = document.getElementById(popupID).classList;
+	doBlur ? popupClasses.remove("hidden") : popupClasses.add("hidden");
 }
 
 function reducer(state, action) {
@@ -142,5 +148,31 @@ export function SelettoreBriscola() {
 		<div id="selettore-briscola" className="hidden">
 			{briscoleJSX}
 		</div>
+	);
+}
+
+export function Popup(props) {
+	return (
+		<Motion
+			defaultStyle={{ top: 0, left: 0, opacity: 0 }}
+			style={{ top: spring(40), left: spring(50), opacity: spring(1) }}
+		>
+			{(style) => {
+				return (
+					<div
+						id={props.id}
+						className="popup hidden"
+						style={{
+							top: `${style.top}%`,
+							left: `${style.left}%`,
+							transform: `translate(-${style.left}%, -${style.left}%)`,
+							opacity: style.opacity,
+						}}
+					>
+						{props.elementJSX}
+					</div>
+				);
+			}}
+		</Motion>
 	);
 }
