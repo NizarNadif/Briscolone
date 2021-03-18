@@ -34,7 +34,7 @@ export function App() {
 				chiamante,
 				[document.getElementsByClassName("mano")[0]],
 				"popup-chiamata"
-			); // chiamante ? toggle : untoggle
+			);
 		});
 
 		api.prossimoTurno((myCard, prossimo, carta) => {
@@ -44,17 +44,22 @@ export function App() {
 		});
 
 		api.scegliBriscola(() => {
-			document.getElementById("selettore-briscola").classList.remove("hidden");
+			blur(
+				true,
+				[document.getElementsByClassName("mano")[0]],
+				"popup-selettore-briscola"
+			);
 		});
 	}, []);
 
 	return (
 		<AppContext.Provider value={{ state, dispatch }}>
+			<p style={{ visibility: "hidden" }}>you should not see me :(</p>
 			<Popup
 				elementJSX={<BarraChiamata attuale={state.attuale} />}
 				id="popup-chiamata"
 			/>
-			<SelettoreBriscola />
+			<Popup elementJSX={<SelettoreBriscola />} id="popup-selettore-briscola" />
 			<Mano />
 		</AppContext.Provider>
 	);
@@ -137,7 +142,11 @@ export function SelettoreBriscola() {
 				key={index}
 				onClick={() => {
 					api.briscolaScelta(seme);
-					document.getElementById("selettore-briscola").classList.add("hidden");
+					blur(
+						false,
+						[document.getElementsByClassName("mano")[0]],
+						"popup-selettore-briscola"
+					);
 				}}
 			>
 				{seme}
@@ -145,7 +154,8 @@ export function SelettoreBriscola() {
 		);
 	});
 	return (
-		<div id="selettore-briscola" className="hidden">
+		<div id="selettore-briscola">
+			<p style={{ fontWeight: "bold" }}> Scegli una briscola </p>
 			{briscoleJSX}
 		</div>
 	);

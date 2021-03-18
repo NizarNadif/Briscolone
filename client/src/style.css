@@ -36,7 +36,7 @@ body {
 	box-shadow: 0 2.8px 2.2px rgba(0, 0, 0, 0.034), 0 6.7px 5.3px rgba(0, 0, 0, 0.048), 0 12.5px 10px rgba(0, 0, 0, 0.06), 0 22.3px 17.9px rgba(0, 0, 0, 0.072), 0 41.8px 33.4px rgba(0, 0, 0, 0.086), 0 100px 80px rgba(0, 0, 0, 0.12);
 }
 
-#barra-chiamata {
+#barra-chiamata, #selettore-briscola {
 	width: 300px;
 	background-color: black;
 	color: white;
@@ -44,9 +44,11 @@ body {
 	border: solid 2px rgba(163, 160, 160, 0.624);
 	border-radius: 10px;
 	justify-content: center;
-	/* visibility: hidden; */
 }
 
+#selettore-briscola {
+	width: 200px;
+}
 
 .blur {
 	filter: blur(2px);
@@ -60,7 +62,7 @@ body {
 	user-select: none;
 }
 
-.pulsante-chiamata {
+.pulsante-chiamata, #selettore-briscola > button {
 	background-color: transparent;
 	border-color: white;
 	color: white;
@@ -70,11 +72,11 @@ body {
 	margin: 10px;
 }
 
-.pulsante-chiamata:hover, .pulsante-non-chiamare:hover {
+.pulsante-chiamata:hover, .pulsante-non-chiamare:hover, #selettore-briscola > button:hover {
 	transform: scale(1.05);
 }
 
-.pulsante-chiamata:active {
+.pulsante-chiamata:active, #selettore-briscola > button:active {
 	transform: scale(0.95);
 	color: black;
 	background-color: greenyellow;
