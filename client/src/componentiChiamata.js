@@ -1,5 +1,4 @@
 import React from "react";
-import { Motion, spring } from "react-motion";
 import api from "./api";
 
 export function BarraChiamata(props) {
@@ -26,47 +25,29 @@ export function BarraChiamata(props) {
 		);
 	});
 	return (
-		<Motion
-			defaultStyle={{ top: 0, left: 0, opacity: 0 }}
-			style={{ top: spring(40), left: spring(50), opacity: spring(1) }}
-		>
-			{(style) => {
-				return (
-					<div
-						style={{
-							top: `${style.top}%`,
-							left: `${style.left}%`,
-							transform: `translate(-${style.left}%, -${style.left}%)`,
-							opacity: style.opacity,
-						}}
-						id="barra-chiamata"
-						className="hidden"
-					>
-						<p style={{ fontWeight: "bold" }}>
-							{props.attuale.valore >= 0
-								? "Ultima chiamata: " +
-								  ordine[props.attuale.valore].toLocaleLowerCase() +
-								  (props.attuale.soglia > 61 ? " a " + props.attuale.soglia : "")
-								: "Sei il primo chiamante"}
-						</p>
-						{pulsantiJSX}
-						<button
-							className="pulsante-non-chiamare"
-							onClick={() => {
-								api.invia({
-									valore: null,
-									soglia: props.attuale.soglia,
-								});
-							}}
-						>
-							non chiamare
-						</button>
+		<div id="barra-chiamata">
+			<p style={{ fontWeight: "bold" }}>
+				{props.attuale.valore >= 0
+					? "Ultima chiamata: " +
+					  ordine[props.attuale.valore].toLocaleLowerCase() +
+					  (props.attuale.soglia > 61 ? " a " + props.attuale.soglia : "")
+					: "Sei il primo chiamante"}
+			</p>
+			{pulsantiJSX}
+			<button
+				className="pulsante-non-chiamare"
+				onClick={() => {
+					api.invia({
+						valore: null,
+						soglia: props.attuale.soglia,
+					});
+				}}
+			>
+				non chiamare
+			</button>
 
-						<SliderSoglia attuale={props.attuale} />
-					</div>
-				);
-			}}
-		</Motion>
+			<SliderSoglia attuale={props.attuale} />
+		</div>
 	);
 }
 
