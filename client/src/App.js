@@ -8,6 +8,8 @@ import { Player } from "./Players.js";
 
 const AppContext = React.createContext(null);
 
+let c = 1;
+
 export function App() {
 	const [state, dispatch] = useReducer(reducer, {
 		carte: new Array(),
@@ -108,14 +110,17 @@ function reducer(state, action) {
 			newState.giocatori = action.payload;
 			break;
 		case "ha giocato una carta":
-			let i = 0;
-			state.giocatori.forEach((giocatore, index) => {
-				if (giocatore.id == action.payload) {
-					i = index;
-					newState.giocatori[index].carte = state.giocatori[index].carte - 1;
-				}
-			});
-			console.log(newState.giocatori[i].carte, i);
+			c++;
+			if (c%2 == 0){
+				let i = 0;
+				state.giocatori.forEach((giocatore, index) => {
+					if (giocatore.id == action.payload) {
+						i = index;
+						newState.giocatori[index].carte = state.giocatori[index].carte - 1;
+					}
+				});
+				console.log(newState.giocatori[i].carte, i);
+			}
 			break;
 		case "chiamata attuale":
 			newState.attuale = action.payload;
