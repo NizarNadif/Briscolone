@@ -10,6 +10,7 @@ export default {
 	scegliBriscola,
 	briscolaScelta,
 	turnoPrecedente,
+	giocatoriIniziali,
 };
 
 socket.on("connect", () => {
@@ -18,6 +19,17 @@ socket.on("connect", () => {
 
 function carteIniziali(callback) {
 	socket.on("carteIniziali", (carte) => callback(carte));
+}
+
+function giocatoriIniziali(callback) {
+	socket.on("giocatori", (players) => {
+		let i = (players.indexOf(socket.id) + 1) % 5;
+		let giocatori = new Array();
+		for (let j = 0; j < 4; j++, i = (i + 1) % 5) {
+			giocatori.push({ id: players[i], carte: 8 });
+		}
+		callback(giocatori);
+	});
 }
 
 function selezioneChiamata(callback) {
@@ -44,16 +56,15 @@ function giocaCarta(carta) {
 }
 
 function prossimoTurno(callback) {
-	
 	socket.on("prossimo a giocare", (prossimo) => {
 		console.log(prossimo);
-		//callback(params.precedente == socket.id, params.prossimo, params.carta);
 	});
 }
 
 function turnoPrecedente(callback) {
 	socket.on("ultima giocata", (params) => {
-		callback(params.precedente == socket.id, params.carta);
+		console.log("ultima giocata: bla bla bla");
+		callback(params.precedente == socket.id, params.carta, params.precedente);
 	});
 }
 

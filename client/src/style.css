@@ -4,39 +4,56 @@ body {
 
 #app {
 	height: 100%;
-    justify-content: space-between;
-    flex-direction: column;
-    display: flex;
+	justify-content: space-between;
+	flex-direction: column;
+	display: flex;
 	font-family: sans-serif;
 }
 
 .mano {
 	justify-content: center;
-    display: flex;
+	display: flex;
 }
 
 .carta {
 	margin: 20px;
 	width: 60px;
 	border: solid 1px black;
-	
+
 	outline: solid 8px white;
 	-moz-outline-radius: 5px;
-	
+
 	/* shadows */
 	box-shadow: 0 2.8px 2.2px rgba(0, 0, 0, 0.034),
-	0 6.7px 5.3px rgba(0, 0, 0, 0.048), 0 12.5px 10px rgba(0, 0, 0, 0.06),
-		0 22.3px 17.9px rgba(0, 0, 0, 0.072),
-		0 41.8px 33.4px rgba(0, 0, 0, 0.086), 0 100px 80px rgba(0, 0, 0, 0.12);
+		0 6.7px 5.3px rgba(0, 0, 0, 0.048), 0 12.5px 10px rgba(0, 0, 0, 0.06),
+		0 22.3px 17.9px rgba(0, 0, 0, 0.072), 0 41.8px 33.4px rgba(0, 0, 0, 0.086),
+		0 100px 80px rgba(0, 0, 0, 0.12);
+}
+
+.carta-coperta {
+	margin: 5px;
+	width: 70px;
+
+	border-radius: 5px;
+
+	/* shadows */
+	box-shadow: 0 2.8px 2.2px rgba(0, 0, 0, 0.034),
+		0 6.7px 5.3px rgba(0, 0, 0, 0.048), 0 12.5px 10px rgba(0, 0, 0, 0.06),
+		0 22.3px 17.9px rgba(0, 0, 0, 0.072), 0 41.8px 33.4px rgba(0, 0, 0, 0.086),
+		0 100px 80px rgba(0, 0, 0, 0.12);
 }
 
 .popup {
 	position: fixed;
 	z-index: 99;
-	box-shadow: 0 2.8px 2.2px rgba(0, 0, 0, 0.034), 0 6.7px 5.3px rgba(0, 0, 0, 0.048), 0 12.5px 10px rgba(0, 0, 0, 0.06), 0 22.3px 17.9px rgba(0, 0, 0, 0.072), 0 41.8px 33.4px rgba(0, 0, 0, 0.086), 0 100px 80px rgba(0, 0, 0, 0.12);
+	box-shadow: 0 2.8px 2.2px rgba(0, 0, 0, 0.034),
+		0 6.7px 5.3px rgba(0, 0, 0, 0.048), 0 12.5px 10px rgba(0, 0, 0, 0.06),
+		0 22.3px 17.9px rgba(0, 0, 0, 0.072), 0 41.8px 33.4px rgba(0, 0, 0, 0.086),
+		0 100px 80px rgba(0, 0, 0, 0.12);
 }
 
-#barra-chiamata, #selettore-briscola {
+#barra-chiamata,
+#selettore-briscola {
 	width: 300px;
 	background-color: black;
 	color: white;
@@ -52,8 +69,8 @@ body {
 
 .blur {
 	filter: blur(2px);
-    pointer-events: none;
-    user-select: none;
+	pointer-events: none;
+	user-select: none;
 }
 
 .hidden {
@@ -62,7 +79,8 @@ body {
 	user-select: none;
 }
 
-.pulsante-chiamata, #selettore-briscola > button {
+.pulsante-chiamata,
+#selettore-briscola > button {
 	background-color: transparent;
 	border-color: white;
 	color: white;
@@ -72,11 +90,14 @@ body {
 	margin: 10px;
 }
 
-.pulsante-chiamata:hover, .pulsante-non-chiamare:hover, #selettore-briscola > button:hover {
+.pulsante-chiamata:hover,
+.pulsante-non-chiamare:hover,
+#selettore-briscola > button:hover {
 	transform: scale(1.05);
 }
 
-.pulsante-chiamata:active, #selettore-briscola > button:active {
+.pulsante-chiamata:active,
+#selettore-briscola > button:active {
 	transform: scale(0.95);
 	color: black;
 	background-color: greenyellow;
@@ -128,7 +149,6 @@ input[type="range"]:focus {
 	outline: none;
 }
 
-
 /* stilizzo la barra dello slider */
 input[type="range"]::-webkit-slider-runnable-track {
 	background: aquamarine;
@@ -141,7 +161,6 @@ input[type="range"]::-moz-range-track {
 	height: 5px;
 	border-radius: 10px;
 }
-
 
 /* stilizzo il cursore dello slider */
 input[type="range"]::-webkit-slider-thumb {
@@ -159,4 +178,7 @@ input[type="range"]::-moz-range-thumb {
 	background: gray;
 	margin-top: -5px;
 	border-radius: 50%;
+}
+
+.player {
 }

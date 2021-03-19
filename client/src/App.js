@@ -4,6 +4,7 @@ import assets from "./carte";
 import { BarraChiamata } from "./componentiChiamata.js";
 import "./style.css";
 import api from "./api.js";
+import { Player } from "./Players.js";
 
 const AppContext = React.createContext(null);
 
@@ -11,12 +12,31 @@ export function App() {
 	const [state, dispatch] = useReducer(reducer, {
 		carte: new Array(),
 		attuale: { valore: -1, soglia: 61 },
+		giocatori: new Array(),
+		giocatoreAttuale: 0,
 	});
+
+	let PlayersJSX = [
+		<Player id={"giocatore-0"} giocatore={{ id: "primo", carte: 8 }} />,
+		<Player id={"giocatore-1"} giocatore={{ id: "secondo", carte: 8 }} />,
+		<Player id={"giocatore-2"} giocatore={{ id: "terzo", carte: 8 }} />,
+		<Player id={"giocatore-3"} giocatore={{ id: "quarto", carte: 8 }} />,
+	];
 
 	useEffect(() => {
 		api.carteIniziali((carte) => {
 			console.log(carte);
 			dispatch({ type: "carte", payload: carte });
+		});
+
+		api.giocatoriIniziali((players) => {
+			console.log(players);
+			dispatch({ type: "giocatori", payload: players });
+			PlayersJSX = state.giocatori.map((playerID, index) => {
+				return (
+					<Player id={`giocatore-${index}`} giocatore={state.giocatori[index]} />
+				);
+			});
 		});
 
 		api.selezioneChiamata((attuale, chiamante) => {
@@ -37,11 +57,11 @@ export function App() {
 			);
 		});
 
-		api.turnoPrecedente((myCard, carta) => {
+		api.turnoPrecedente((myCard, carta, precedente) => {
 			console.log("Ultima carta giocata:", carta);
 			if (myCard) dispatch({ type: "rimuovi carta", payload: carta });
+			else dispatch({ type: "ha giocato una carta", payload: precedente });
 		});
-
 
 		api.scegliBriscola(() => {
 			blur(
@@ -60,6 +80,7 @@ export function App() {
 				id="popup-chiamata"
 			/>
 			<Popup elementJSX={<SelettoreBriscola />} id="popup-selettore-briscola" />
+			{PlayersJSX}
 			<Mano />
 		</AppContext.Provider>
 	);
@@ -82,6 +103,19 @@ function reducer(state, action) {
 		case "carte":
 			newState.carte = action.payload;
 			newState.attuale = { valore: -1, soglia: 61 };
+			break;
+		case "giocatori":
+			newState.giocatori = action.payload;
+			break;
+		case "ha giocato una carta":
+			let i = 0;
+			state.giocatori.forEach((giocatore, index) => {
+				if (giocatore.id == action.payload) {
+					i = index;
+					newState.giocatori[index].carte = state.giocatori[index].carte - 1;
+				}
+			});
+			console.log(newState.giocatori[i].carte, i);
 			break;
 		case "chiamata attuale":
 			newState.attuale = action.payload;

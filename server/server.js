@@ -21,6 +21,10 @@ io.on("connection", (client) => {
 		client.emit("message", { message: "ciao", sender: "io me stesso" });
 		client.join(client.id);
 		if (users.size == 5) {
+			io.emit(
+				"giocatori",
+				Array.from(users.values()).map((socket) => socket.id)
+			);
 			scripts.game(users, io);
 		}
 	}
