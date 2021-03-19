@@ -19,10 +19,10 @@ export function App() {
 	});
 
 	let PlayersJSX = [
-		<Player id={"giocatore-0"} giocatore={{ id: "primo", carte: 8 }} />,
-		<Player id={"giocatore-1"} giocatore={{ id: "secondo", carte: 8 }} />,
-		<Player id={"giocatore-2"} giocatore={{ id: "terzo", carte: 8 }} />,
-		<Player id={"giocatore-3"} giocatore={{ id: "quarto", carte: 8 }} />,
+		<Player id={"giocatore-0"} giocatore={0} contesto={AppContext}/>,
+		<Player id={"giocatore-1"} giocatore={1} contesto={AppContext}/>,
+		<Player id={"giocatore-2"} giocatore={2} contesto={AppContext}/>,
+		<Player id={"giocatore-3"} giocatore={3} contesto={AppContext}/>,
 	];
 
 	useEffect(() => {
@@ -36,7 +36,7 @@ export function App() {
 			dispatch({ type: "giocatori", payload: players });
 			PlayersJSX = state.giocatori.map((playerID, index) => {
 				return (
-					<Player id={`giocatore-${index}`} giocatore={state.giocatori[index]} />
+					<Player id={`giocatore-${index}`} giocatore={index} contesto={AppContext} />
 				);
 			});
 		});
