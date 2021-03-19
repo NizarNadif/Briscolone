@@ -4,43 +4,42 @@ import Dorso from "../public/assets/Dorso.png";
 import carte from "./carte";
 
 export function Player(params) {
-	let nCarte = 0;
 	const { state, dispatch } = useContext(params.contesto);
-	if (state.giocatori[params.giocatore] == undefined) nCarte = 8;
-	else nCarte = state.giocatori[params.giocatore].carte;
+	let nCarte = state.giocatori[params.id].carte;
+
 	let stile = {};
-	console.log("React prendi il tumore ", nCarte);
+
 	switch (params.id) {
-		case "giocatore-0":
+		case 0:
 			stile = {
 				bottom: "30%",
 				right: "0%",
-				transform: "rotate(90deg) translate(-30%, -150%)",
-				color: "red",
+				transform: `rotate(270deg) translate(30%, ${(90 * nCarte) / 8}%)`,
+				/* translateY deve rimanere costante
+				90% : n carte massimo = x : n carte rimaste
+				se non lo si fa, la mano si sposta sempre più verso l'esterno
+				*/
 			};
 			break;
-		case "giocatore-1":
+		case 1:
 			stile = {
 				transform: "rotate(180deg)",
 				top: "0%",
 				right: "10%",
-				color: "yellow",
 			};
 			break;
-		case "giocatore-2":
+		case 2:
 			stile = {
 				transform: "rotate(180deg)",
 				top: "0%",
 				left: "10%",
-				color: "green",
 			};
 			break;
-		case "giocatore-3":
+		case 3:
 			stile = {
 				bottom: "30%",
 				left: "0%",
-				transform: "rotate(90deg) translate(-30%, 150%)",
-				color: "blue",
+				transform: `rotate(90deg) translate(-30%, ${(90 * nCarte) / 8}%)`,
 			};
 			break;
 		default:
@@ -50,12 +49,19 @@ export function Player(params) {
 	let carteJSX = new Array();
 	for (let i = 0; i < nCarte; i++)
 		carteJSX.push(
-			<img className="carta-coperta" alt={"carta coperta"} src={Dorso} />
+			<img
+				className="carta-coperta"
+				alt={"carta coperta"}
+				src={Dorso}
+				key={`player-${params.id}-card-${i}`}
+			/>
 		);
 
 	return (
-		<div class="player" style={stile}>
+		<div className="player" id={`player-${params.id}`} style={stile}>
 			{carteJSX}
+			<br></br>
+			{state.giocatori[params.id].id}
 		</div>
 	);
 }
