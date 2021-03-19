@@ -19,10 +19,10 @@ export function App() {
 	});
 
 	let PlayersJSX = [
-		<Player id={"giocatore-0"} giocatore={0} contesto={AppContext}/>,
-		<Player id={"giocatore-1"} giocatore={1} contesto={AppContext}/>,
-		<Player id={"giocatore-2"} giocatore={2} contesto={AppContext}/>,
-		<Player id={"giocatore-3"} giocatore={3} contesto={AppContext}/>,
+		<Player id={"giocatore-0"} giocatore={0} contesto={AppContext} />,
+		<Player id={"giocatore-1"} giocatore={1} contesto={AppContext} />,
+		<Player id={"giocatore-2"} giocatore={2} contesto={AppContext} />,
+		<Player id={"giocatore-3"} giocatore={3} contesto={AppContext} />,
 	];
 
 	useEffect(() => {
@@ -36,7 +36,11 @@ export function App() {
 			dispatch({ type: "giocatori", payload: players });
 			PlayersJSX = state.giocatori.map((playerID, index) => {
 				return (
-					<Player id={`giocatore-${index}`} giocatore={index} contesto={AppContext} />
+					<Player
+						id={`giocatore-${index}`}
+						giocatore={index}
+						contesto={AppContext}
+					/>
 				);
 			});
 		});
@@ -52,11 +56,7 @@ export function App() {
 				document
 					.getElementById("slider-soglia-contenitore")
 					.classList.add("hidden");
-			blur(
-				chiamante,
-				[document.getElementsByClassName("mano")[0]],
-				"popup-chiamata"
-			);
+			blur(chiamante, ["mano", "player"], "popup-chiamata");
 		});
 
 		api.turnoPrecedente((myCard, carta, precedente) => {
@@ -66,11 +66,7 @@ export function App() {
 		});
 
 		api.scegliBriscola(() => {
-			blur(
-				true,
-				[document.getElementsByClassName("mano")[0]],
-				"popup-selettore-briscola"
-			);
+			blur(true, ["mano", "player"], "popup-selettore-briscola");
 		});
 	}, []);
 
@@ -88,11 +84,16 @@ export function App() {
 	);
 }
 
-export function blur(doBlur, arrayBlur, popupID) {
+export function blur(doBlur, classesToBlur, popupID) {
 	console.log("blur:", doBlur);
 
-	arrayBlur.forEach((element) => {
-		doBlur ? element.classList.add("blur") : element.classList.remove("blur");
+	classesToBlur.forEach((classToBlur) => {
+		let elements = document.getElementsByClassName(classToBlur);
+		console.log(elements.length);
+		for (let i = 0; i < elements.length; i++)
+			doBlur
+				? elements[i].classList.add("blur")
+				: elements[i].classList.remove("blur");
 	});
 
 	const popupClasses = document.getElementById(popupID).classList;
@@ -111,7 +112,7 @@ function reducer(state, action) {
 			break;
 		case "ha giocato una carta":
 			c++;
-			if (c%2 == 0){
+			if (c % 2 == 0) {
 				let i = 0;
 				state.giocatori.forEach((giocatore, index) => {
 					if (giocatore.id == action.payload) {
@@ -182,11 +183,7 @@ export function SelettoreBriscola() {
 				key={index}
 				onClick={() => {
 					api.briscolaScelta(seme);
-					blur(
-						false,
-						[document.getElementsByClassName("mano")[0]],
-						"popup-selettore-briscola"
-					);
+					blur(false, ["mano", "player"], "popup-selettore-briscola");
 				}}
 			>
 				{seme}

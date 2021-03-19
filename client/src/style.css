@@ -31,8 +31,8 @@ body {
 }
 
 .carta-coperta {
-	margin: 5px;
-	width: 70px;
+	margin: 3px;
+	width: 40px;
 
 	border-radius: 5px;
 
@@ -181,4 +181,6 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .player {
+	position: fixed;
+	margin: 30px;
 }

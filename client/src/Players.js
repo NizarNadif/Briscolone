@@ -6,24 +6,42 @@ import carte from "./carte";
 export function Player(params) {
 	let nCarte = 0;
 	const { state, dispatch } = useContext(params.contesto);
-	if (state.giocatori[params.giocatore] == undefined)
-		nCarte = 8;
-	else 
-		nCarte = state.giocatori[params.giocatore].carte;
+	if (state.giocatori[params.giocatore] == undefined) nCarte = 8;
+	else nCarte = state.giocatori[params.giocatore].carte;
 	let stile = {};
 	console.log("React prendi il tumore ", nCarte);
 	switch (params.id) {
 		case "giocatore-0":
-			stile = {};
+			stile = {
+				bottom: "30%",
+				right: "0%",
+				transform: "rotate(90deg) translate(-30%, -150%)",
+				color: "red",
+			};
 			break;
 		case "giocatore-1":
-			stile = {};
+			stile = {
+				transform: "rotate(180deg)",
+				top: "0%",
+				right: "10%",
+				color: "yellow",
+			};
 			break;
 		case "giocatore-2":
-			stile = {};
+			stile = {
+				transform: "rotate(180deg)",
+				top: "0%",
+				left: "10%",
+				color: "green",
+			};
 			break;
 		case "giocatore-3":
-			stile = {};
+			stile = {
+				bottom: "30%",
+				left: "0%",
+				transform: "rotate(90deg) translate(-30%, 150%)",
+				color: "blue",
+			};
 			break;
 		default:
 			break;
@@ -37,7 +55,6 @@ export function Player(params) {
 
 	return (
 		<div class="player" style={stile}>
-			{nCarte}
 			{carteJSX}
 		</div>
 	);
