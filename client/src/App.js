@@ -37,11 +37,11 @@ export function App() {
 			);
 		});
 
-		api.prossimoTurno((myCard, prossimo, carta) => {
-			console.log("Prossimo a giocare:", prossimo);
+		api.turnoPrecedente((myCard, carta) => {
 			console.log("Ultima carta giocata:", carta);
 			if (myCard) dispatch({ type: "rimuovi carta", payload: carta });
 		});
+
 
 		api.scegliBriscola(() => {
 			blur(
@@ -81,6 +81,7 @@ function reducer(state, action) {
 	switch (action.type) {
 		case "carte":
 			newState.carte = action.payload;
+			newState.attuale = { valore: -1, soglia: 61 };
 			break;
 		case "chiamata attuale":
 			newState.attuale = action.payload;

@@ -101,7 +101,10 @@ function autorizza(id) {
 }
 
 function chiamata(chiamata) {
-	if (chiamata.valore == null) {
+	if (chiamata.soglia == 120) {
+		ultimaChiamata = chiamata;
+	}
+	else if (chiamata.valore == null) {
 		chiamanti.splice(i, 1);
 		if (i == chiamanti.length) i = 0;
 	} else if (
@@ -128,7 +131,7 @@ function chiamata(chiamata) {
 			player.emit("inizio partita", {});
 		});
 		cartaChiamata.valore = indicizza(ultimaChiamata.valore);
-		sviluppoPartita(chiamanti[0]);
+		sviluppoPartita(chiamanti[i]);
 	}
 }
 
@@ -161,37 +164,42 @@ let sogliaVittoria = 61;
 function cartaGiocata(carta, cartaSocket) {
 	turno.push(cartaSocket);
 	if (turno.length == 5) {
-		let vincente = cartaVincente();
-		//console.log("carta vincente:", vincente.url);
+		
+		io.emit("ultima giocata", {
+			precedente: users[i].id,
+			carta: carta,
+		})
 		turniEffettuati++;
 		if (turniEffettuati == 1) {
 			bloccoCarte = true;
 			scegliBriscola();
+		} 
+		else {
+			trovaVincente();
 		}
-		vincente.giocatore["punti"] += punti;
-		users.forEach((player) => {
-			console.log(player["punti"]);
-		});
-		turno = new Array();
-		punti = 0;
-		let j = i;
-		i = users.indexOf(vincente.giocatore);
-		io.emit("prossimo a giocare", {
-			prossimo: users[i].id,
-			precedente: users[j].id,
-			carta: carta,
-		});
+		
 
 		if (turniEffettuati == 8) finePartita();
-	} else {
-		let j = i;
-		i = (i + 1) % 5;
-		io.emit("prossimo a giocare", {
-			prossimo: users[i].id,
-			precedente: users[j].id,
+	} else {		
+		io.emit("ultima giocata", {
+			precedente: users[i].id,
 			carta: carta,
-		});
+		})
+		i = (i + 1) % 5;
+		io.emit("prossimo a giocare", users[i].id);
 	}
+}
+
+function trovaVincente() {
+	let vincente = cartaVincente();
+	vincente.giocatore["punti"] += punti;
+	users.forEach((player) => {
+		console.log(player["punti"]);
+	});
+	turno = new Array();
+	punti = 0;
+	i = users.indexOf(vincente.giocatore);
+	io.emit("prossimo a giocare", users[i].id);
 }
 
 function cartaVincente() {
@@ -236,6 +244,7 @@ function scegliBriscola() {
 		cartaChiamata.seme = briscolaScelta;
 		bloccoCarte = false;
 		console.log(briscola);
+		trovaVincente();
 	});
 }
 
@@ -277,6 +286,10 @@ function azzera() {
 	cartaChiamata = {
 		valore: "",
 		seme: "",
+	};
+	ultimaChiamata = {
+		valore: -1,
+		soglia: 61,
 	};
 	deck = new Array();
 	mani = new Array();

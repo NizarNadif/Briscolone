@@ -97,7 +97,7 @@ function SliderSoglia(props) {
 			<small id="valoreSoglia">
 				{document.getElementById("soglia") == null
 					? ""
-					: document.getElementById("soglia").value}
+					:(props.attuale.soglia + 1).toString(10)}
 			</small>
 		</div>
 	);

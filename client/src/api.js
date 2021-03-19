@@ -9,6 +9,7 @@ export default {
 	prossimoTurno,
 	scegliBriscola,
 	briscolaScelta,
+	turnoPrecedente,
 };
 
 socket.on("connect", () => {
@@ -43,8 +44,16 @@ function giocaCarta(carta) {
 }
 
 function prossimoTurno(callback) {
-	socket.on("prossimo a giocare", (params) => {
-		callback(params.precedente == socket.id, params.prossimo, params.carta);
+	
+	socket.on("prossimo a giocare", (prossimo) => {
+		console.log(prossimo);
+		//callback(params.precedente == socket.id, params.prossimo, params.carta);
+	});
+}
+
+function turnoPrecedente(callback) {
+	socket.on("ultima giocata", (params) => {
+		callback(params.precedente == socket.id, params.carta);
 	});
 }
 
