@@ -14,15 +14,20 @@ export function App() {
 	const [state, dispatch] = useReducer(reducer, {
 		carte: new Array(),
 		attuale: { valore: -1, soglia: 61 },
-		giocatori: new Array(),
-		giocatoreAttuale: 0,
+		giocatori: [
+			{ id: "giocatore 1", carte: 8 },
+			{ id: "giocatore 2", carte: 8 },
+			{ id: "giocatore 3", carte: 8 },
+			{ id: "giocatore 4", carte: 8 },
+		],
+		giocatoreAttuale: -1,
 	});
 
 	let PlayersJSX = [
-		<Player id={"giocatore-0"} giocatore={0} contesto={AppContext} />,
-		<Player id={"giocatore-1"} giocatore={1} contesto={AppContext} />,
-		<Player id={"giocatore-2"} giocatore={2} contesto={AppContext} />,
-		<Player id={"giocatore-3"} giocatore={3} contesto={AppContext} />,
+		<Player key={"player-0"} id={0} contesto={AppContext} />,
+		<Player key={"player-1"} id={1} contesto={AppContext} />,
+		<Player key={"player-2"} id={2} contesto={AppContext} />,
+		<Player key={"player-3"} id={3} contesto={AppContext} />,
 	];
 
 	useEffect(() => {
@@ -35,13 +40,7 @@ export function App() {
 			console.log(players);
 			dispatch({ type: "giocatori", payload: players });
 			PlayersJSX = state.giocatori.map((playerID, index) => {
-				return (
-					<Player
-						id={`giocatore-${index}`}
-						giocatore={index}
-						contesto={AppContext}
-					/>
-				);
+				return <Player key={`player-${index}`} contesto={AppContext} />;
 			});
 		});
 
@@ -57,6 +56,11 @@ export function App() {
 					.getElementById("slider-soglia-contenitore")
 					.classList.add("hidden");
 			blur(chiamante, ["mano", "player"], "popup-chiamata");
+		});
+
+		api.prossimoTurno((prossimo) => {
+			console.log("Prossimo a giocare:", prossimo);
+			dispatch({ type: "giocatore attuale", payload: prossimo });
 		});
 
 		api.turnoPrecedente((myCard, carta, precedente) => {
@@ -106,6 +110,7 @@ function reducer(state, action) {
 		case "carte":
 			newState.carte = action.payload;
 			newState.attuale = { valore: -1, soglia: 61 };
+			for (let i = 0; i < 4; i++) newState.giocatori[i].carte = 8;
 			break;
 		case "giocatori":
 			newState.giocatori = action.payload;
@@ -132,6 +137,19 @@ function reducer(state, action) {
 				return carta.url != urlCarta;
 			});
 			break;
+		case "giocatore attuale":
+			if (newState.giocatoreAttuale >= 0)
+				document
+					.getElementById(`player-${newState.giocatoreAttuale}`)
+					.classList.remove("player-attuale");
+			newState.giocatoreAttuale = state.giocatori
+				.map((el) => el.id)
+				.indexOf(action.payload);
+			if (newState.giocatoreAttuale >= 0)
+				document
+					.getElementById(`player-${newState.giocatoreAttuale}`)
+					.classList.add("player-attuale");
+			break;
 		default:
 			break;
 	}
@@ -143,7 +161,7 @@ export function Mano() {
 	const { state, dispatch } = useContext(AppContext);
 
 	let manoJSX = state.carte.map((carta, index) => {
-		return <Carta key={index} carta={carta} />;
+		return <Carta key={`card-${index}`} carta={carta} />;
 	});
 
 	return <div className="mano">{manoJSX}</div>;

@@ -57,7 +57,7 @@ function giocaCarta(carta) {
 
 function prossimoTurno(callback) {
 	socket.on("prossimo a giocare", (prossimo) => {
-		console.log(prossimo);
+		callback(prossimo);
 	});
 }
 
