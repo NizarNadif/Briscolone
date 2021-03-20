@@ -1,5 +1,7 @@
 body {
-	background-color: green;
+	background-image: url("../public/tavolo_briscolone_online.jpg");
+	background-size: cover;
+	background-size: 100% 100%;
 }
 
 #app {
