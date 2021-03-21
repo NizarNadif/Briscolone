@@ -41,7 +41,7 @@ io.on("connection", (client) => {
 	});
 
 	client.on("carta giocata", (carta) => {
-		if (scripts.checkTurno(client.id)) {
+		if (scripts.checkTurno(client.id, carta)) {
 			let temp = { ...carta };
 			carta["giocatore"] = client;
 			scripts.cartaGiocata(temp, carta);

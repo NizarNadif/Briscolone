@@ -13,7 +13,8 @@ let mani = new Array();
 let giocatoreIniziale = 0;
 let vincitoreChiamata;
 let bloccoCarte;
-
+let deckControllo = new Array();
+deckGeneratorControl();
 function game(utenti, connessione) {
 	bloccoCarte = true;
 	users = utenti;
@@ -84,6 +85,8 @@ let cartaChiamata = {
 };
 
 function call() {
+	deckControllo = new Array();
+	deckGeneratorControl();
 	chiamanti = Array.from(users.values());
 
 	i = giocatoreIniziale;
@@ -94,6 +97,7 @@ function call() {
 			chiamante: chiamanti[i].id,
 		});
 	});
+	io.emit("prossimo a giocare", chiamanti[i].id);
 }
 
 function autorizza(id) {
@@ -122,14 +126,17 @@ function chiamata(chiamata) {
 				chiamante: chiamanti[i].id,
 			});
 		});
+		io.emit("prossimo a giocare", chiamanti[i].id);
 	} else {
 		users.forEach((player) => {
 			player.emit("selezione chiamata", {
 				attuale: ultimaChiamata,
 				chiamante: "RandomID",
 			});
+			
 			player.emit("inizio partita", {});
 		});
+		io.emit("prossimo a giocare", chiamanti[giocatoreIniziale].id);
 		cartaChiamata.valore = indicizza(ultimaChiamata.valore);
 		sviluppoPartita(chiamanti[i]);
 	}
@@ -151,7 +158,14 @@ function indicizza(carta) {
 	return ordine[carta];
 }
 
-function checkTurno(id) {
+function checkTurno(id, carta) {
+	if (deckControllo[carta.url] == false){
+		deckControllo[carta.url] = true;
+	}
+	else {
+		console.log(carta.url);
+		return false;
+	}
 	if (!bloccoCarte) return id == users[i].id;
 }
 
@@ -172,6 +186,7 @@ function cartaGiocata(carta, cartaSocket) {
 		turniEffettuati++;
 		if (turniEffettuati == 1) {
 			bloccoCarte = true;
+			io.emit("prossimo a giocare", vincitoreChiamata.id);
 			scegliBriscola();
 		} 
 		else {
@@ -199,6 +214,7 @@ function trovaVincente() {
 	turno = new Array();
 	punti = 0;
 	i = users.indexOf(vincente.giocatore);
+	io.emit("vincitore turno", users[i].id);
 	io.emit("prossimo a giocare", users[i].id);
 }
 
@@ -278,7 +294,7 @@ function nuovoGiro() {
 }
 
 function azzera() {
-	turno = Array();
+	turno = new Array();
 	turniEffettuati = 0;
 	briscola = "";
 	punti = 0;
@@ -294,4 +310,27 @@ function azzera() {
 	deck = new Array();
 	mani = new Array();
 	giocatoreIniziale = (giocatoreIniziale + 1) % 5;
+	deckControllo = new Array();
+	deckGeneratorControl();
+}
+
+function deckGeneratorControl() {
+	let semi = ["Coppe", "Spade", "Bastoni", "Denari"];
+	let valori = [
+		"Asse",
+		"Due",
+		"Tre",
+		"Quattro",
+		"Cinque",
+		"Sei",
+		"Sette",
+		"Fante",
+		"Cavallo",
+		"Re",
+	];
+	for (let i = 0; i < 4; i++)
+		for (let j = 0; j < 10; j++){
+			let stringa = semi[i] + valori[j];
+			deckControllo[stringa] = false;
+		}
 }

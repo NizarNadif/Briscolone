@@ -4,7 +4,7 @@ import assets from "./carte";
 import { BarraChiamata } from "./componentiChiamata.js";
 import "./style.css";
 import api from "./api.js";
-import { Player } from "./Players.js";
+import { Player, CartaGiocata } from "./Players.js";
 
 const AppContext = React.createContext(null);
 
@@ -14,11 +14,12 @@ export function App() {
 	const [state, dispatch] = useReducer(reducer, {
 		carte: new Array(),
 		attuale: { valore: -1, soglia: 61 },
+		ultimaCartaNostra: null,
 		giocatori: [
-			{ id: "giocatore 1", carte: 8 },
-			{ id: "giocatore 2", carte: 8 },
-			{ id: "giocatore 3", carte: 8 },
-			{ id: "giocatore 4", carte: 8 },
+			{ id: "giocatore 1", carte: 8, ultimaCarta: null },
+			{ id: "giocatore 2", carte: 8, ultimaCarta: null },
+			{ id: "giocatore 3", carte: 8, ultimaCarta: null },
+			{ id: "giocatore 4", carte: 8, ultimaCarta: null },	
 		],
 		giocatoreAttuale: -1,
 	});
@@ -28,6 +29,14 @@ export function App() {
 		<Player key={"player-1"} id={1} contesto={AppContext} />,
 		<Player key={"player-2"} id={2} contesto={AppContext} />,
 		<Player key={"player-3"} id={3} contesto={AppContext} />,
+	];
+	
+	let CardsPlayedJSX = [
+		<CartaGiocata key={"cardPlayed-0"} id={0} contesto={AppContext} />,
+		<CartaGiocata key={"cardPlayed-1"} id={1} contesto={AppContext} />,
+		<CartaGiocata key={"cardPlayed-2"} id={2} contesto={AppContext} />,
+		<CartaGiocata key={"cardPlayed-3"} id={3} contesto={AppContext} />,
+		<CartaGiocata key={"cardPlayed-4"} id={4} contesto={AppContext} />,
 	];
 
 	useEffect(() => {
@@ -39,9 +48,6 @@ export function App() {
 		api.giocatoriIniziali((players) => {
 			console.log(players);
 			dispatch({ type: "giocatori", payload: players });
-			PlayersJSX = state.giocatori.map((playerID, index) => {
-				return <Player key={`player-${index}`} contesto={AppContext} />;
-			});
 		});
 
 		api.selezioneChiamata((attuale, chiamante) => {
@@ -62,11 +68,16 @@ export function App() {
 			console.log("Prossimo a giocare:", prossimo);
 			dispatch({ type: "giocatore attuale", payload: prossimo });
 		});
+				
+		api.vincitoreTurno((vincitore) => {
+			console.log("Il turno è stato vinto da:", vincitore);
+			dispatch({ type: "vincitore turno", payload: vincitore });
+		});
 
 		api.turnoPrecedente((myCard, carta, precedente) => {
 			console.log("Ultima carta giocata:", carta);
 			if (myCard) dispatch({ type: "rimuovi carta", payload: carta });
-			else dispatch({ type: "ha giocato una carta", payload: precedente });
+			else dispatch({ type: "ha giocato una carta", payload: {giocatore: precedente, carta: carta} });
 		});
 
 		api.scegliBriscola(() => {
@@ -83,6 +94,7 @@ export function App() {
 			/>
 			<Popup elementJSX={<SelettoreBriscola />} id="popup-selettore-briscola" />
 			{PlayersJSX}
+			{CardsPlayedJSX}
 			<Mano />
 		</AppContext.Provider>
 	);
@@ -120,14 +132,31 @@ function reducer(state, action) {
 			if (c % 2 == 0) {
 				let i = 0;
 				state.giocatori.forEach((giocatore, index) => {
-					if (giocatore.id == action.payload) {
+					if (giocatore.id == action.payload.giocatore) {
 						i = index;
 						newState.giocatori[index].carte = state.giocatori[index].carte - 1;
+						action.payload.carta['angolo'] = Math.random() * 40 - 20;
+						newState.giocatori[index].ultimaCarta = action.payload.carta;
 					}
 				});
 				console.log(newState.giocatori[i].carte, i);
 			}
 			break;
+		case "vincitore turno":
+			newState.ultimaCartaNostra = null;
+			
+
+
+			
+			newState.giocatori.forEach((giocatore, index) => {
+				newState.giocatori[index].ultimaCarta = null;
+			});
+			break;
+		case "abbiamo giocato una carta":
+			newState.ultimaCartaNostra = action.payload;
+			newState.ultimaCartaNostra['angolo'] = Math.random() * 40 - 20;
+			api.giocaCarta(action.payload);
+				break;
 		case "chiamata attuale":
 			newState.attuale = action.payload;
 			break;
@@ -168,6 +197,8 @@ export function Mano() {
 }
 
 function Carta(props) {
+	const { state, dispatch } = useContext(AppContext);
+
 	return (
 		<Motion
 			defaultStyle={{ y: +300, opacity: 0 }}
@@ -184,7 +215,8 @@ function Carta(props) {
 						alt={props.carta.valore + " di " + props.carta.seme}
 						src={assets[props.carta.url]}
 						onClick={() => {
-							api.giocaCarta(props.carta);
+							if (state.giocatoreAttuale == -1)
+								dispatch({ type: "abbiamo giocato una carta", payload: props.carta });
 						}}
 					/>
 				);

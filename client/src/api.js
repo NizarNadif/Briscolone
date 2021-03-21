@@ -11,6 +11,7 @@ export default {
 	briscolaScelta,
 	turnoPrecedente,
 	giocatoriIniziali,
+	vincitoreTurno,
 };
 
 socket.on("connect", () => {
@@ -58,6 +59,12 @@ function giocaCarta(carta) {
 function prossimoTurno(callback) {
 	socket.on("prossimo a giocare", (prossimo) => {
 		callback(prossimo);
+	});
+}
+
+function vincitoreTurno(callback) {
+	socket.on("vincitore turno", (vincitore) => {
+		callback(vincitore);
 	});
 }
 
