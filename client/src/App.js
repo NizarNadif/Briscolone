@@ -59,7 +59,7 @@ export function App() {
 				document
 					.getElementById("slider-soglia-contenitore")
 					.classList.add("hidden");
-			blur(chiamante, ["mano", "player"], "popup-chiamata");
+			blur(chiamante, ["mano", "player", "carta-giocata"], "popup-chiamata");
 		});
 
 		api.prossimoTurno((prossimo) => {
@@ -83,7 +83,7 @@ export function App() {
 		});
 
 		api.scegliBriscola(() => {
-			blur(true, ["mano", "player"], "popup-selettore-briscola");
+			blur(true, ["mano", "player", "carta-giocata"], "popup-selettore-briscola");
 		});
 	}, []);
 
@@ -222,24 +222,41 @@ function Carta(props) {
 }
 
 export function SelettoreBriscola() {
+	const { state, dispatch } = useContext(AppContext);
 	let semi = ["Coppe", "Spade", "Bastoni", "Denari"];
-	let briscoleJSX = semi.map((seme, index) => {
+	let ordine = [
+		"Asse",
+		"Tre",
+		"Re",
+		"Cavallo",
+		"Fante",
+		"Sette",
+		"Sei",
+		"Cinque",
+		"Quattro",
+		"Due",
+	];
+	let sociJSX = semi.map((seme, index) => {
 		return (
-			<button
+			<img
 				key={index}
+				className="carta"
+				src={assets[seme + ordine[state.attuale.valore]]}
 				onClick={() => {
 					api.briscolaScelta(seme);
-					blur(false, ["mano", "player"], "popup-selettore-briscola");
+					blur(
+						false,
+						["mano", "player", "carta-giocata"],
+						"popup-selettore-briscola"
+					);
 				}}
-			>
-				{seme}
-			</button>
+			/>
 		);
 	});
 	return (
 		<div id="selettore-briscola">
 			<p style={{ fontWeight: "bold" }}> Scegli una briscola </p>
-			{briscoleJSX}
+			{sociJSX}
 		</div>
 	);
 }

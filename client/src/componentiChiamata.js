@@ -3,7 +3,7 @@ import api from "./api";
 
 export function BarraChiamata(props) {
 	let ordine = [
-		"Asso",
+		"Asse",
 		"Tre",
 		"Re",
 		"Cavallo",
@@ -97,7 +97,7 @@ function SliderSoglia(props) {
 			<small id="valoreSoglia">
 				{document.getElementById("soglia") == null
 					? ""
-					:(props.attuale.soglia + 1).toString(10)}
+					: (props.attuale.soglia + 1).toString(10)}
 			</small>
 		</div>
 	);
