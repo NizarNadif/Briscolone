@@ -12,6 +12,9 @@ export default {
 	turnoPrecedente,
 	giocatoriIniziali,
 	vincitoreTurno,
+	cartaSocio,
+	eventoLog,
+	vincitore,
 };
 
 socket.on("connect", () => {
@@ -43,7 +46,7 @@ function selezioneChiamata(callback) {
 			"uguali:",
 			socket.id == params.chiamante
 		);
-		callback(params.attuale, socket.id === params.chiamante);
+		callback(params.attuale, params.chiamante, socket.id === params.chiamante);
 	});
 }
 
@@ -56,15 +59,28 @@ function giocaCarta(carta) {
 	socket.emit("carta giocata", carta);
 }
 
+function cartaSocio(callback) {
+	socket.on("carta socio", (cartaSocio) => {
+		callback(cartaSocio);
+	});
+}
+
+function eventoLog(callback) {
+	socket.on("evento log", (evento) => {
+		callback(evento, evento.user === socket.id);
+	});
+}
+
 function prossimoTurno(callback) {
 	socket.on("prossimo a giocare", (prossimo) => {
+		console.log(prossimo);
 		callback(prossimo);
 	});
 }
 
 function vincitoreTurno(callback) {
 	socket.on("vincitore turno", (vincitore) => {
-		callback(vincitore);
+		callback(vincitore, vincitore === socket.id);
 	});
 }
 
@@ -85,6 +101,6 @@ function briscolaScelta(briscola) {
 
 function vincitore(callback) {
 	socket.on("vincitore", (params) => {
-		callback(params);
+		callback(params.chiamante === socket.id || params.socio === socket.id, params.puntiChiamanti);
 	})
 }

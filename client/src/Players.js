@@ -7,7 +7,8 @@ export function Player(params) {
 	let nCarte = state.giocatori[params.id].carte;
 
 	let stile = {};
-
+	let stileTesto = {
+	};
 	switch (params.id) {
 		case 0:
 			stile = {
@@ -24,15 +25,23 @@ export function Player(params) {
 			stile = {
 				transform: "rotate(180deg)",
 				top: "0%",
-				right: "10%",
+				right: "15%",
 			};
+			stileTesto ={
+				...stileTesto,
+				transform: "rotate(180deg)"
+			}
 			break;
 		case 2:
 			stile = {
 				transform: "rotate(180deg)",
 				top: "0%",
-				left: "10%",
+				left: "15%",
 			};
+			stileTesto = {
+				...stileTesto,
+				transform: "rotate(180deg)"
+			}
 			break;
 		case 3:
 			stile = {
@@ -40,6 +49,7 @@ export function Player(params) {
 				left: "0%",
 				transform: `rotate(90deg) translate(-30%, ${(90 * nCarte) / 8}%)`,
 			};
+			
 			break;
 		default:
 			break;
@@ -60,7 +70,9 @@ export function Player(params) {
 		<div className="player" id={`player-${params.id}`} style={stile}>
 			<div className="mano-player">{carteJSX}</div>
 			<br></br>
-			{state.giocatori[params.id].id}
+			<p style={stileTesto}>
+				{state.giocatori[params.id].id}
+			</p>
 		</div>
 	);
 }
@@ -87,7 +99,7 @@ export function CartaGiocata(params) {
 		- il valore di "dumping" è direttamente proporzionale alla "reattività" dell'animazione (indice di variazione dell'animazione nel tempo),
 			se è pari a 0 la nostra funzione spring non farà mai variare il valore di partenza
 	*/
-	const config = { stiffness: 30, dumping: 14 };
+	const config = { stiffness: 60, dumping: 14 };
 
 	switch (params.id) {
 		case 0:
@@ -138,7 +150,7 @@ export function CartaGiocata(params) {
 				}}
 				style={{
 					rotazione: spring(rotazioneCarta, config),
-					variazionePartenza: spring(animation.end, { ...config, stiffness: 10 }),
+					variazionePartenza: spring(animation.end, config),
 					opacity: spring(1, config),
 				}}
 			>

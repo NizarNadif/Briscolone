@@ -21,24 +21,21 @@ export function App() {
 		],
 		giocatoreAttuale: -1,
 		bloccoCarte: false,
-		log: ['ciao', 'como estas?','ciao', 'como estas?','ciao', 'como estas?','ciao', 'como estas?']
+		log: new Array(),
+		cartaSocio: {valore: null, seme: null},
+		chiamante: null,
+		finePartita: false,
+		vincente: false,
 	});
 
-	let PlayersJSX = [
-		<Player key={"player-0"} id={0} contesto={AppContext} />,
-		<Player key={"player-1"} id={1} contesto={AppContext} />,
-		<Player key={"player-2"} id={2} contesto={AppContext} />,
-		<Player key={"player-3"} id={3} contesto={AppContext} />,
-	];
-
-	let CardsPlayedJSX = [
-		<CartaGiocata key={"cardPlayed-0"} id={0} contesto={AppContext} />,
-		<CartaGiocata key={"cardPlayed-1"} id={1} contesto={AppContext} />,
-		<CartaGiocata key={"cardPlayed-2"} id={2} contesto={AppContext} />,
-		<CartaGiocata key={"cardPlayed-3"} id={3} contesto={AppContext} />,
-		<CartaGiocata key={"cardPlayed-4"} id={4} contesto={AppContext} />,
-	];
-
+	let PlayersJSX = [];
+	for (let i = 0; i < 4; i++)
+		PlayersJSX[PlayersJSX.length] = <Player key={`player-${i}`} id={i} contesto={AppContext} />;
+	
+	let CardsPlayedJSX = [];
+	for (let i = 0; i < 5; i++)
+		CardsPlayedJSX[CardsPlayedJSX.length] = <CartaGiocata key={`cardPlayed-${i}`} id={i} contesto={AppContext} />;
+	
 	useEffect(() => {
 		api.carteIniziali((carte) => {
 			console.log(carte);
@@ -50,8 +47,13 @@ export function App() {
 			dispatch({ type: "giocatori", payload: players });
 		});
 
-		api.selezioneChiamata((attuale, chiamante) => {
-			console.log("selezione chiamata", attuale);
+		api.eventoLog((evento, itsMe) => {
+			dispatch({ type: "evento", payload: `${itsMe ? 'Hai' : evento.user + ' ha'} ${evento.stringa}` });
+		});
+
+		api.selezioneChiamata((attuale, chiamante, isChiamante) => {
+			if (chiamante != "RandomID")
+				dispatch({ type: "chiamante", payload: chiamante });
 			dispatch({ type: "chiamata attuale", payload: attuale });
 			if (attuale.valore == 9)
 				document
@@ -61,21 +63,25 @@ export function App() {
 				document
 					.getElementById("slider-soglia-contenitore")
 					.classList.add("hidden");
-			blur(chiamante, ["mano", "player", "carta-giocata"], "popup-chiamata");
+			blur(isChiamante, ["mano", "player", "carta-giocata"], "popup-chiamata");
 		});
+
+		api.cartaSocio((cartaSocio) => {
+			dispatch({ type: "carta socio", payload: cartaSocio });
+		})
 
 		api.prossimoTurno((prossimo) => {
 			console.log("Prossimo a giocare:", prossimo);
 			dispatch({ type: "giocatore attuale", payload: prossimo });
 		});
 
-		api.vincitoreTurno((vincitore) => {
+		api.vincitoreTurno((vincitore, isVincitore) => {
 			console.log("Il turno è stato vinto da:", vincitore);
 			dispatch({ type: "switch"});
-
+			
 			function sleep(time) { return new Promise((resolve) => setTimeout(resolve, time)) };
 			sleep(3750).then(() => {
-				dispatch({ type: "vincitore turno", payload: vincitore });
+				dispatch({ type: "vincitore turno" });
 				sleep(500).then(() => {dispatch({ type: "switch"})});
 			});
 		});
@@ -93,6 +99,14 @@ export function App() {
 		api.scegliBriscola(() => {
 			blur(true, ["mano", "player", "carta-giocata"], "popup-selettore-briscola");
 		});
+
+		api.vincitore((itsMe, punti) => {
+			if ((itsMe && punti < state.attuale.soglia ) || (!itsMe && punti >= state.attuale.soglia)){
+				dispatch({ type: "sconfitta"});
+			} else {
+				dispatch({ type: "vittoria"});
+			}
+		})
 	}, []);
 
 	return (
@@ -107,8 +121,30 @@ export function App() {
 			{CardsPlayedJSX}
 			<Log />
 			<Mano />
+			<CartaSocio />
+			{state.finePartita ? <Popup elementJSX={<FinePartita />}/> : ""}
 		</AppContext.Provider>
 	);
+}
+
+export function CartaSocio(){
+	const { state, dispatch } = useContext(AppContext);
+
+	return (
+		<>
+		{state.cartaSocio.seme == null ? "" : (
+			<div className="display-socio">
+				<p>Carta del socio</p>
+				<img
+				src={assets[state.cartaSocio.seme + state.cartaSocio.valore]}
+				className="carta"
+				/>
+				<p>Chiamante:<br/>{state.chiamante}</p>
+			</div>
+		)
+		
+		}
+	</>)
 }
 
 export function blur(doBlur, classesToBlur, popupID) {
@@ -134,9 +170,17 @@ function reducer(state, action) {
 			newState.carte = action.payload;
 			newState.attuale = { valore: -1, soglia: 61 };
 			for (let i = 0; i < 4; i++) newState.giocatori[i].carte = 8;
+			newState.cartaSocio = { valore: null, seme: null };
+			newState.log = new Array();
+			newState.chiamante = null;
+			newState.vincente = false;
+			//newState.finePartita = false;
 			break;
 		case "giocatori":
 			newState.giocatori = action.payload;
+			break;
+		case "chiamante":
+			newState.chiamante = action.payload;
 			break;
 		case "ha giocato una carta":
 			let i = 0;
@@ -165,6 +209,9 @@ function reducer(state, action) {
 		case "chiamata attuale":
 			newState.attuale = action.payload;
 			break;
+		case "carta socio":
+			newState.cartaSocio = action.payload;
+			break;
 		case "rimuovi carta":
 			let urlCarta = action.payload.url;
 			newState.carte = state.carte.filter((carta) => {
@@ -174,18 +221,26 @@ function reducer(state, action) {
 		case "giocatore attuale":
 			if (newState.giocatoreAttuale >= 0)
 				document
-					.getElementById(`player-${newState.giocatoreAttuale}`)
-					.classList.remove("player-attuale");
+					.getElementById(`player-${newState.giocatoreAttuale}`).
+					classList.remove("player-attuale");
 			newState.giocatoreAttuale = state.giocatori
 				.map((el) => el.id)
 				.indexOf(action.payload);
 			if (newState.giocatoreAttuale >= 0)
 				document
-					.getElementById(`player-${newState.giocatoreAttuale}`)
-					.classList.add("player-attuale");
+					.getElementById(`player-${newState.giocatoreAttuale}`).
+					classList.add("player-attuale");
 			break;
 		case "switch":
 			newState.bloccoCarte = !state.bloccoCarte;
+			break;
+		case "evento":
+			newState.log.unshift(action.payload);
+			break;
+		case "vittoria":
+			newState.vincente = true;
+		case "sconfitta":
+			newState.finePartita = true;
 			break;
 		default:
 			break;
@@ -308,6 +363,19 @@ function Log() {
 	return (
 		<div className="log">
 			{logJSX}
+		</div>
+	)
+}
+
+function FinePartita(){
+	const { state, dispatch } = useContext(AppContext);
+
+	let classe = state.vincente ? "vittorioso" : "sconfitto";
+
+	return (
+		<div className={classe}>
+			{state.vincente ? "HAI VINTO" : "HAI PERSO"}
+			<button onClick={() => {}} />
 		</div>
 	)
 }
