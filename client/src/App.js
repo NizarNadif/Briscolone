@@ -26,6 +26,7 @@ export function App() {
 		chiamante: null,
 		finePartita: false,
 		vincente: false,
+		punti: 0,
 	});
 
 	let PlayersJSX = [];
@@ -63,7 +64,7 @@ export function App() {
 				document
 					.getElementById("slider-soglia-contenitore")
 					.classList.add("hidden");
-			blur(isChiamante, ["mano", "player", "carta-giocata"], "popup-chiamata");
+			blur(isChiamante, ["mano", "player", "carta-giocata", "display-socio"], "popup-chiamata");
 		});
 
 		api.cartaSocio((cartaSocio) => {
@@ -97,7 +98,7 @@ export function App() {
 		});
 
 		api.scegliBriscola(() => {
-			blur(true, ["mano", "player", "carta-giocata"], "popup-selettore-briscola");
+			blur(true, ["mano", "player", "carta-giocata", "display-socio"], "popup-selettore-briscola");
 		});
 
 		api.vincitore((itsMe, punti) => {
@@ -106,6 +107,10 @@ export function App() {
 			} else {
 				dispatch({ type: "vittoria"});
 			}
+			if (itsMe)
+				dispatch({ type: "punti", payload: punti});
+			else 
+				dispatch({ type: "punti", payload: (120 - punti)});
 		})
 	}, []);
 
@@ -117,12 +122,12 @@ export function App() {
 				id="popup-chiamata"
 			/>
 			<Popup elementJSX={<SelettoreBriscola />} id="popup-selettore-briscola" />
+			<Popup elementJSX={<FinePartita />} id="popup-fine-partita"/>
 			{PlayersJSX}
 			{CardsPlayedJSX}
 			<Log />
 			<Mano />
 			<CartaSocio />
-			{state.finePartita ? <Popup elementJSX={<FinePartita />}/> : ""}
 		</AppContext.Provider>
 	);
 }
@@ -173,7 +178,6 @@ function reducer(state, action) {
 			newState.cartaSocio = { valore: null, seme: null };
 			newState.log = new Array();
 			newState.chiamante = null;
-			newState.vincente = false;
 			//newState.finePartita = false;
 			break;
 		case "giocatori":
@@ -240,7 +244,14 @@ function reducer(state, action) {
 		case "vittoria":
 			newState.vincente = true;
 		case "sconfitta":
-			newState.finePartita = true;
+			blur(
+				true,
+				["mano", "player", "carta-giocata", "display-socio"],
+				"popup-fine-partita"
+			);
+			break;
+		case "punti":
+			newState.punti = action.payload;
 			break;
 		default:
 			break;
@@ -313,7 +324,7 @@ export function SelettoreBriscola() {
 					api.briscolaScelta(seme);
 					blur(
 						false,
-						["mano", "player", "carta-giocata"],
+						["mano", "player", "carta-giocata", "display-socio"],
 						"popup-selettore-briscola"
 					);
 				}}
@@ -370,12 +381,20 @@ function Log() {
 function FinePartita(){
 	const { state, dispatch } = useContext(AppContext);
 
-	let classe = state.vincente ? "vittorioso" : "sconfitto";
-
+	let classe = (state.vincente ? "vittorioso" : "sconfitto");
+	let tuoiPunti = 0;
 	return (
 		<div className={classe}>
 			{state.vincente ? "HAI VINTO" : "HAI PERSO"}
-			<button onClick={() => {}} />
+			<button onClick={() => {
+				dispatch({ type: "sconfitta"});
+				blur(
+					false,
+					["mano", "player", "carta-giocata", "display-socio"],
+					"popup-fine-partita"
+				);
+			}}>X</button>
+			<h1>Con {state.punti} punti</h1>
 		</div>
 	)
 }
