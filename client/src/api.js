@@ -82,3 +82,9 @@ function scegliBriscola(callback) {
 function briscolaScelta(briscola) {
 	socket.emit("briscola scelta", briscola);
 }
+
+function vincitore(callback) {
+	socket.on("vincitore", (params) => {
+		callback(params);
+	})
+}

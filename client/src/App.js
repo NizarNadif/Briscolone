@@ -20,6 +20,8 @@ export function App() {
 			{ id: "giocatore 4", carte: 8, ultimaCarta: null },
 		],
 		giocatoreAttuale: -1,
+		bloccoCarte: false,
+		log: ['ciao', 'como estas?','ciao', 'como estas?','ciao', 'como estas?','ciao', 'como estas?']
 	});
 
 	let PlayersJSX = [
@@ -69,7 +71,13 @@ export function App() {
 
 		api.vincitoreTurno((vincitore) => {
 			console.log("Il turno è stato vinto da:", vincitore);
-			dispatch({ type: "vincitore turno", payload: vincitore });
+			dispatch({ type: "switch"});
+
+			function sleep(time) { return new Promise((resolve) => setTimeout(resolve, time)) };
+			sleep(3750).then(() => {
+				dispatch({ type: "vincitore turno", payload: vincitore });
+				sleep(500).then(() => {dispatch({ type: "switch"})});
+			});
 		});
 
 		api.turnoPrecedente((myCard, carta, precedente) => {
@@ -97,6 +105,7 @@ export function App() {
 			<Popup elementJSX={<SelettoreBriscola />} id="popup-selettore-briscola" />
 			{PlayersJSX}
 			{CardsPlayedJSX}
+			<Log />
 			<Mano />
 		</AppContext.Provider>
 	);
@@ -143,11 +152,11 @@ function reducer(state, action) {
 			break;
 		case "vincitore turno":
 			newState.ultimaCartaNostra = null;
-
 			newState.giocatori.forEach((giocatore, index) => {
 				newState.giocatori[index].ultimaCarta = null;
 			});
 			break;
+
 		case "abbiamo giocato una carta":
 			newState.ultimaCartaNostra = action.payload;
 			newState.ultimaCartaNostra["angolo"] = Math.random() * 40 - 20;
@@ -174,6 +183,9 @@ function reducer(state, action) {
 				document
 					.getElementById(`player-${newState.giocatoreAttuale}`)
 					.classList.add("player-attuale");
+			break;
+		case "switch":
+			newState.bloccoCarte = !state.bloccoCarte;
 			break;
 		default:
 			break;
@@ -211,7 +223,7 @@ function Carta(props) {
 						alt={props.carta.valore + " di " + props.carta.seme}
 						src={assets[props.carta.url]}
 						onClick={() => {
-							if (state.giocatoreAttuale == -1)
+							if (state.giocatoreAttuale == -1 && !state.bloccoCarte)
 								dispatch({ type: "abbiamo giocato una carta", payload: props.carta });
 						}}
 					/>
@@ -285,4 +297,17 @@ export function Popup(props) {
 			}}
 		</Motion>
 	);
+}
+
+function Log() {
+	const { state, dispatch } = useContext(AppContext);
+
+	let logJSX = state.log.map((evento, index) => {
+		return <div key={`evento-${index}`} className="evento">{evento}</div>
+	})
+	return (
+		<div className="log">
+			{logJSX}
+		</div>
+	)
 }
