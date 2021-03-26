@@ -1,5 +1,5 @@
 import openSocket from "socket.io-client";
-const socket = openSocket("https://briscolone.sbibbof.repl.co/");
+const socket = openSocket("http://localhost:4321");
 
 export default {
 	loggedIn,
