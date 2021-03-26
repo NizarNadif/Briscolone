@@ -1,7 +1,8 @@
 import openSocket from "socket.io-client";
-const socket = openSocket("http://localhost:4321");
+const socket = openSocket("https://briscolone.sbibbof.repl.co/");
 
 export default {
+	loggedIn,
 	carteIniziali,
 	selezioneChiamata,
 	invia,
@@ -20,6 +21,13 @@ export default {
 socket.on("connect", () => {
 	console.log("connessione...");
 });
+
+function loggedIn(data) {
+	socket.emit("logged in", {
+		name: data.name,
+		picture: data.picture,
+	});
+}
 
 function carteIniziali(callback) {
 	socket.on("carteIniziali", (carte) => callback(carte));
@@ -101,6 +109,9 @@ function briscolaScelta(briscola) {
 
 function vincitore(callback) {
 	socket.on("vincitore", (params) => {
-		callback(params.chiamante === socket.id || params.socio === socket.id, params.puntiChiamanti);
-	})
+		callback(
+			params.chiamante === socket.id || params.socio === socket.id,
+			params.puntiChiamanti
+		);
+	});
 }
