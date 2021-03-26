@@ -34,6 +34,10 @@ io.on("connection", (client) => {
 		users.delete(client.id); // dimensione => users.size
 	});
 
+	client.on("logged in", (data) => {
+		console.log(data);
+	});
+
 	client.on("chiamata", (chiamata) => {
 		if (scripts.autorizza(client.id)) {
 			scripts.chiamata(chiamata);

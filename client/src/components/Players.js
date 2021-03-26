@@ -1,14 +1,13 @@
 import React, { useReducer, useContext, useEffect } from "react";
 import { Motion, spring } from "react-motion";
-import assets from "./carte";
+// import assets from "./carte";
 
 export function Player(params) {
 	const { state, dispatch } = useContext(params.contesto);
 	let nCarte = state.giocatori[params.id].carte;
 
 	let stile = {};
-	let stileTesto = {
-	};
+	let stileTesto = {};
 	switch (params.id) {
 		case 0:
 			stile = {
@@ -27,10 +26,10 @@ export function Player(params) {
 				top: "0%",
 				right: "15%",
 			};
-			stileTesto ={
+			stileTesto = {
 				...stileTesto,
-				transform: "rotate(180deg)"
-			}
+				transform: "rotate(180deg)",
+			};
 			break;
 		case 2:
 			stile = {
@@ -40,8 +39,8 @@ export function Player(params) {
 			};
 			stileTesto = {
 				...stileTesto,
-				transform: "rotate(180deg)"
-			}
+				transform: "rotate(180deg)",
+			};
 			break;
 		case 3:
 			stile = {
@@ -49,7 +48,7 @@ export function Player(params) {
 				left: "0%",
 				transform: `rotate(90deg) translate(-30%, ${(90 * nCarte) / 8}%)`,
 			};
-			
+
 			break;
 		default:
 			break;
@@ -61,7 +60,9 @@ export function Player(params) {
 			<img
 				className="carta-coperta"
 				alt={"carta coperta"}
-				src={assets["Dorso"]}
+				src={
+					"https://raw.githubusercontent.com/NizarNadif/Briscolone/main/client/public/assets/Dorso.png"
+				}
 				key={`player-${params.id}-card-${i}`}
 			/>
 		);
@@ -70,9 +71,7 @@ export function Player(params) {
 		<div className="player" id={`player-${params.id}`} style={stile}>
 			<div className="mano-player">{carteJSX}</div>
 			<br></br>
-			<p style={stileTesto}>
-				{state.giocatori[params.id].id}
-			</p>
+			<p style={stileTesto}>{state.giocatori[params.id].id}</p>
 		</div>
 	);
 }
@@ -164,7 +163,7 @@ export function CartaGiocata(params) {
 									style={toCSS(style)}
 									className="carta-giocata"
 									alt={"carta"}
-									src={assets[cartaUltima.url]} //`translateY(${style.y}px)`
+									src={`https://raw.githubusercontent.com/NizarNadif/Briscolone/main/client/public/assets/${cartaUltima.url}.png`} //`translateY(${style.y}px)`
 								/>
 							)}
 						</>
