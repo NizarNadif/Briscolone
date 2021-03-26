@@ -1,15 +1,17 @@
 import React, { useReducer, useContext, useEffect } from "react";
 import { Motion, spring } from "react-motion";
 // import assets from "./carte";
-import { BarraChiamata } from "./components/componentiChiamata.js";
-import "./style.css";
-import api from "./api.js";
-import { Player, CartaGiocata } from "./components/Players.js";
+import BarraChiamata from "./CallingWindow.js";
+import "../../assets/styles/board.css";
+import api from "../../api.js";
+import { Player, CartaGiocata } from "./Players.js";
 import { useAuth0 } from "@auth0/auth0-react";
+export default Board;
 
 const AppContext = React.createContext(null);
 
 export function Board() {
+	console.log("welcome to the board");
 	const [state, dispatch] = useReducer(reducer, {
 		carte: new Array(),
 		attuale: { valore: -1, soglia: 61 },
@@ -30,6 +32,7 @@ export function Board() {
 		punti: 0,
 	});
 	const { user, isAuthenticated } = useAuth0();
+	console.log(user);
 
 	let PlayersJSX = [];
 	for (let i = 0; i < 4; i++)
@@ -140,18 +143,20 @@ export function Board() {
 
 	return (
 		<AppContext.Provider value={{ state, dispatch }}>
-			<p style={{ visibility: "hidden" }}>you should not see me :(</p>
-			<Popup
-				elementJSX={<BarraChiamata attuale={state.attuale} />}
-				id="popup-chiamata"
-			/>
-			<Popup elementJSX={<SelettoreBriscola />} id="popup-selettore-briscola" />
-			<Popup elementJSX={<FinePartita />} id="popup-fine-partita" />
-			{PlayersJSX}
-			{CardsPlayedJSX}
-			<Log />
-			<Mano />
-			<CartaSocio />
+			<div className="board">
+				<p style={{ visibility: "hidden" }}>you should not see me :(</p>
+				<Popup
+					elementJSX={<BarraChiamata attuale={state.attuale} />}
+					id="popup-chiamata"
+				/>
+				<Popup elementJSX={<SelettoreBriscola />} id="popup-selettore-briscola" />
+				<Popup elementJSX={<FinePartita />} id="popup-fine-partita" />
+				{PlayersJSX}
+				{CardsPlayedJSX}
+				<Log />
+				<Mano />
+				<CartaSocio />
+			</div>
 		</AppContext.Provider>
 	);
 }

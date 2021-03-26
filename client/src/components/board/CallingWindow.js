@@ -1,7 +1,9 @@
 import React from "react";
-import api from "../api";
+import api from "../../api";
 
-export function BarraChiamata(props) {
+export default BarraChiamata;
+
+function BarraChiamata(props) {
 	let ordine = [
 		"Asse",
 		"Tre",

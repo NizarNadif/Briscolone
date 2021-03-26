@@ -1,6 +1,7 @@
 import openSocket from "socket.io-client";
 const socket = openSocket("http://localhost:4321");
-
+console.log(window.location.pathname);
+console.log("API loaded.");
 export default {
 	loggedIn,
 	carteIniziali,

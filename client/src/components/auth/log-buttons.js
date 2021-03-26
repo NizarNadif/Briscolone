@@ -1,7 +1,19 @@
 import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 
-const LogoutButton = () => {
+export function LoginButton() {
+	const { loginWithRedirect, isAuthenticated } = useAuth0();
+
+	if (isAuthenticated) return <></>;
+
+	return (
+		<button className="btn-login" onClick={() => loginWithRedirect()}>
+			Log In
+		</button>
+	);
+}
+
+export function LogoutButton() {
 	const { logout, isAuthenticated } = useAuth0();
 
 	if (!isAuthenticated) return <></>;
@@ -14,6 +26,4 @@ const LogoutButton = () => {
 			Log Out
 		</button>
 	);
-};
-
-export default LogoutButton;
+}
