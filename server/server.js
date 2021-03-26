@@ -15,19 +15,22 @@ const port = 4321;
 const users = new Map();
 
 io.on("connection", (client) => {
-	if (users.size < 5) {
-		users.set(client.id, client);
-		console.log("client", client.id, "connected");
-		client.emit("message", { message: "ciao", sender: "io me stesso" });
-		client.join(client.id);
-		if (users.size == 5) {
-			io.emit(
-				"giocatori",
-				Array.from(users.values()).map((socket) => socket.id)
-			);
-			scripts.game(users, io);
+	console.log("client", client.id, "connected");
+
+	client.on("join", () => {
+		console.log("client", client.id, "joined the game");
+		if (users.size < 5) {
+			users.set(client.id, client);
+			client.join(client.id);
+			if (users.size == 5) {
+				io.emit(
+					"giocatori",
+					Array.from(users.values()).map((socket) => socket.id)
+				);
+				scripts.game(users, io);
+			}
 		}
-	}
+	});
 
 	client.on("disconnect", () => {
 		console.log("client ", client.id, "disconnected");

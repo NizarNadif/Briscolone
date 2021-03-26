@@ -23,6 +23,7 @@ socket.on("connect", () => {
 });
 
 function loggedIn(data) {
+	socket.emit("join", {});
 	socket.emit("logged in", {
 		name: data.name,
 		picture: data.picture,

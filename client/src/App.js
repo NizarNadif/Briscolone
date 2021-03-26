@@ -1,14 +1,18 @@
 import React from "react";
-import LoginButton from "./components/auth/LoginButton";
-import LogoutButton from "./components/auth/LogoutButton";
-import MainPage from "./MainPage";
+import { BrowserRouter, Switch, Route, Link, Redirect } from "react-router-dom";
+import HomePage from "./HomePage";
+import Board from "./components/board/Board";
+import PrivateRoute from "./components/PrivateRoute";
 
 export function App() {
 	return (
-		<div className="app">
-			<LoginButton />
-			<LogoutButton />
-			<MainPage />
-		</div>
+		<>
+			<BrowserRouter>
+				<Switch>
+					<Route exact path="/" component={HomePage} />
+					<PrivateRoute exact path="/board" component={Board} />
+				</Switch>
+			</BrowserRouter>
+		</>
 	);
 }
