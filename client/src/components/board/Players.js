@@ -15,9 +15,13 @@ export function Player(params) {
 				right: "0%",
 				transform: `rotate(270deg) translate(30%, ${(80 * nCarte) / 8}%)`,
 				/* translateY deve rimanere costante
-				90% : n carte massimo = x : n carte rimaste
+				80% : n carte massimo = x : n carte rimaste
 				se non lo si fa, la mano si sposta sempre più verso l'esterno
 				*/
+			};
+			stileProfilo = {
+				...stileProfilo,
+				transform: "rotate(90deg)",
 			};
 			break;
 		case 1:
@@ -47,6 +51,10 @@ export function Player(params) {
 				bottom: "30%",
 				left: "0%",
 				transform: `rotate(90deg) translate(-30%, ${(80 * nCarte) / 8}%)`,
+			};
+			stileProfilo = {
+				...stileProfilo,
+				transform: "rotate(-90deg)",
 			};
 
 			break;
@@ -84,18 +92,14 @@ export function Player(params) {
 function FloatingProfile(params) {
 	const { state, dispatch } = useContext(params.contesto);
 	return (
-		<div
-			id={`player-profile-${params.id}`}
-			class="player-profile-float"
+		<img
 			style={params.style}
-		>
-			<p>{state.giocatori[params.id].name}</p>
-			<img
-				src={state.giocatori[params.id].picture}
-				title={state.giocatori[params.id].name}
-				alt={state.giocatori[params.id].name}
-			/>
-		</div>
+			id={`player-profile-${params.id}`}
+			className="player-profile-float"
+			src={state.giocatori[params.id].picture}
+			title={state.giocatori[params.id].name}
+			alt={state.giocatori[params.id].name}
+		/>
 	);
 }
 

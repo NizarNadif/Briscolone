@@ -26,8 +26,9 @@ function game(utenti, connessione) {
 function sviluppoPartita(vincitore) {
 	bloccoCarte = false;
 	users = Array.from(users.values());
-	io.emit("prossimo a giocare", users[giocatoreIniziale].id);
 	vincitoreChiamata = vincitore;
+	io.emit("vincitore chiamate", vincitoreChiamata.id);
+	io.emit("prossimo a giocare", users[giocatoreIniziale].id);
 	i = giocatoreIniziale;
 	users.forEach((player) => {
 		player["punti"] = 0;

@@ -17,12 +17,14 @@ const users = new Map();
 io.on("connection", (client) => {
 	console.log("client", client.id, "connected");
 
-	client.on("join", () => {
+	client.on("join", (data) => {
 		console.log("client", client.id, "joined the game");
 		if (users.size < 5) {
 			users.set(client.id, {
 				socket: client,
 				id: client.id,
+				name: data.name,
+				picture: data.picture,
 			});
 			client.join(client.id);
 			if (users.size == 5) {
@@ -46,14 +48,6 @@ io.on("connection", (client) => {
 	client.on("disconnect", () => {
 		console.log("client ", client.id, "disconnected");
 		users.delete(client.id); // dimensione => users.size
-	});
-
-	client.on("logged in", (data) => {
-		users.set(client.id, {
-			...users.get(client.id),
-			name: data.name,
-			picture: data.picture,
-		});
 	});
 
 	client.on("chiamata", (chiamata) => {

@@ -226,26 +226,17 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .player-profile-float {
-	display: flex;
-	flex-direction: column;
-
+	background-image: linear-gradient(transparent, transparent),
+		linear-gradient(180deg, yellow, purple 50%, cornflowerblue);
+	width: 100px;
+	height: 100px;
+	padding: 0px;
+	border-radius: 50%;
 	border: 10px solid transparent;
-	inline-size: 200px;
-	overflow-wrap: break-word;
-	box-sizing: border-box;
-	text-transform: uppercase;
-	font-family: "Open Sans", "Source Sans Pro", Helvetica, sans-serif;
-	font-size: 1em;
-	letter-spacing: 0.5px;
-	padding: 1rem;
-	align-items: center;
 
-	background-image: linear-gradient(white, white),
+	background-image: linear-gradient(transparent, transparent),
 		linear-gradient(270deg, #00d7b9, #b95dd7 50%, #ffb367 100%);
-
-	background-repeat: no-repeat;
 	background-origin: padding-box, border-box;
-	text-align: center;
 }
 
 @keyframes rotate {
@@ -255,8 +246,13 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .player-attuale {
-	background-image: linear-gradient(white, white),
+	background-image: linear-gradient(transparent, transparent),
 		linear-gradient(180deg, yellow, purple 50%, cornflowerblue);
+	width: 100px;
+	height: 100px;
+	padding: 0px;
+	border-radius: 50%;
+	border: 10px solid transparent;
 
 	background-repeat: no-repeat;
 	background-size: 100% 100%, 100% 200%;
@@ -273,10 +269,6 @@ input[type="range"]::-moz-range-thumb {
 
 .mano-player {
 	display: flex;
-	flex-direction: row;
-	height: 100px;
-	top: 50%;
-	transform: translateY(50%);
 	margin: 10px;
 }
 
