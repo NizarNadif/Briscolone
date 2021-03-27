@@ -1,6 +1,6 @@
 import React, { useReducer, useContext, useEffect } from "react";
 import { Motion, spring } from "react-motion";
-// import assets from "./carte";
+//import carte from "./carte";
 import BarraChiamata from "./CallingWindow.js";
 import "../../assets/styles/board.css";
 import api from "../../api.js";
@@ -17,10 +17,10 @@ export function Board() {
 		attuale: { valore: -1, soglia: 61 },
 		ultimaCartaNostra: null,
 		giocatori: [
-			{ id: "giocatore 1", carte: 8, ultimaCarta: null },
-			{ id: "giocatore 2", carte: 8, ultimaCarta: null },
-			{ id: "giocatore 3", carte: 8, ultimaCarta: null },
-			{ id: "giocatore 4", carte: 8, ultimaCarta: null },
+			{ id: "a", nome: "giocatore 1", picture: "", carte: 8, ultimaCarta: null },
+			{ id: "b", nome: "giocatore 2", picture: "", carte: 8, ultimaCarta: null },
+			{ id: "c", nome: "giocatore 3", picture: "", carte: 8, ultimaCarta: null },
+			{ id: "d", nome: "giocatore 4", picture: "", carte: 8, ultimaCarta: null },
 		],
 		giocatoreAttuale: -1,
 		bloccoCarte: false,
@@ -67,8 +67,14 @@ export function Board() {
 		});
 
 		api.selezioneChiamata((attuale, chiamante, isChiamante) => {
-			if (chiamante != "RandomID")
-				dispatch({ type: "chiamante", payload: chiamante });
+			if (chiamante != "RandomID") {
+				let nome = "";
+				state.giocatori.forEach((giocatore) => {
+					if (chiamante == giocatore.id) nome = giocatore.nome;
+				});
+				if (nome.length == 0) nome = "te";
+				dispatch({ type: "chiamante", payload: nome });
+			}
 			dispatch({ type: "chiamata attuale", payload: attuale });
 			if (attuale.valore == 9)
 				document
@@ -172,7 +178,7 @@ export function CartaSocio() {
 				<div className="display-socio">
 					<p>Carta del socio</p>
 					<img
-						src={`https://raw.githubusercontent.com/NizarNadif/Briscolone/main/client/public/assets/${
+						src={`https://raw.githubusercontent.com/NizarNadif/Briscolone/main/client/src/assets/img/carte/${
 							state.cartaSocio.seme + state.cartaSocio.valore
 						}.png`}
 						className="carta"
@@ -261,14 +267,14 @@ function reducer(state, action) {
 		case "giocatore attuale":
 			if (newState.giocatoreAttuale >= 0)
 				document
-					.getElementById(`player-${newState.giocatoreAttuale}`)
+					.getElementById(`player-profile-${newState.giocatoreAttuale}`)
 					.classList.remove("player-attuale");
 			newState.giocatoreAttuale = state.giocatori
 				.map((el) => el.id)
 				.indexOf(action.payload);
 			if (newState.giocatoreAttuale >= 0)
 				document
-					.getElementById(`player-${newState.giocatoreAttuale}`)
+					.getElementById(`player-profile-${newState.giocatoreAttuale}`)
 					.classList.add("player-attuale");
 			break;
 		case "switch":
@@ -323,7 +329,7 @@ function Carta(props) {
 						}}
 						className="carta"
 						alt={props.carta.valore + " di " + props.carta.seme}
-						src={`https://raw.githubusercontent.com/NizarNadif/Briscolone/main/client/public/assets/${props.carta.url}.png`}
+						src={`https://raw.githubusercontent.com/NizarNadif/Briscolone/main/client/src/assets/img/carte/${props.carta.url}.png`}
 						onClick={() => {
 							if (state.giocatoreAttuale == -1 && !state.bloccoCarte)
 								dispatch({ type: "abbiamo giocato una carta", payload: props.carta });
@@ -355,7 +361,7 @@ export function SelettoreBriscola() {
 			<img
 				key={index}
 				className="carta"
-				src={`https://raw.githubusercontent.com/NizarNadif/Briscolone/main/client/public/assets/${
+				src={`https://raw.githubusercontent.com/NizarNadif/Briscolone/main/client/src/assets/img/carte/${
 					seme + ordine[state.attuale.valore]
 				}.png`}
 				onClick={() => {

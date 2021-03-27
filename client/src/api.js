@@ -1,5 +1,5 @@
 import openSocket from "socket.io-client";
-const socket = openSocket("http://localhost:4321");
+const socket = openSocket("http://localhost:3000");
 
 export default {
 	loggedIn,
@@ -36,10 +36,14 @@ function carteIniziali(callback) {
 
 function giocatoriIniziali(callback) {
 	socket.on("giocatori", (players) => {
-		let i = (players.indexOf(socket.id) + 1) % 5;
+		console.log("your id:", socket.id, "\n", players);
+		let i = 0;
+		players.forEach((player, index) => {
+			if (player.id == socket.id) i = (index + 1) % 5;
+		});
 		let giocatori = new Array();
 		for (let j = 0; j < 4; j++, i = (i + 1) % 5) {
-			giocatori.push({ id: players[i], carte: 8 });
+			giocatori.push({ ...players[i], carte: 8 });
 		}
 		callback(giocatori);
 	});
