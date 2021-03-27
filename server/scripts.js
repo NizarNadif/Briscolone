@@ -26,8 +26,9 @@ function game(utenti, connessione) {
 function sviluppoPartita(vincitore) {
 	bloccoCarte = false;
 	users = Array.from(users.values());
-	io.emit("prossimo a giocare", users[giocatoreIniziale].id);
 	vincitoreChiamata = vincitore;
+	io.emit("vincitore chiamate", vincitoreChiamata.id);
+	io.emit("prossimo a giocare", users[giocatoreIniziale].id);
 	i = giocatoreIniziale;
 	users.forEach((player) => {
 		player["punti"] = 0;
@@ -118,19 +119,21 @@ function chiamata(chiamata) {
 		io.emit("evento log", {
 			user: chiamanti[i].id,
 			stringa: " abbandonato la chiamata",
-		})
+		});
 		chiamanti.splice(i, 1);
 		if (i == chiamanti.length) i = 0;
-	}
-	else {
+	} else {
 		io.emit("evento log", {
 			user: chiamanti[i].id,
-			stringa: " chiamato " + ordine[chiamata.valore].toLowerCase() + " a " + chiamata.soglia,
-		})
+			stringa:
+				" chiamato " +
+				ordine[chiamata.valore].toLowerCase() +
+				" a " +
+				chiamata.soglia,
+		});
 		if (chiamata.soglia == 120) {
 			ultimaChiamata = chiamata;
-		}
-		else if (
+		} else if (
 			chiamata.valore >= ultimaChiamata.valore &&
 			chiamata.soglia >= ultimaChiamata.soglia
 		) {
@@ -139,28 +142,23 @@ function chiamata(chiamata) {
 		}
 	}
 
-
 	if (chiamanti.length > 1 && ultimaChiamata.soglia < 120) {
-		users.forEach((player) => {
-			player.emit("selezione chiamata", {
-				attuale: ultimaChiamata,
-				chiamante: chiamanti[i].id,
-			});
+		io.emit("selezione chiamata", {
+			attuale: ultimaChiamata,
+			chiamante: chiamanti[i].id,
 		});
 		io.emit("prossimo a giocare", chiamanti[i].id);
 	} else {
-		users.forEach((player) => {
-			player.emit("selezione chiamata", {
-				attuale: ultimaChiamata,
-				chiamante: "RandomID",
-			});
-
-			player.emit("inizio partita", {});
+		io.emit("selezione chiamata", {
+			attuale: ultimaChiamata,
+			chiamante: "RandomID",
 		});
+
+		io.emit("inizio partita", {});
 		io.emit("evento log", {
 			user: chiamanti[i].id,
 			stringa: " vinto la chiamata",
-		})
+		});
 		cartaChiamata.valore = indicizza(ultimaChiamata.valore);
 		sviluppoPartita(chiamanti[i]);
 	}
@@ -194,28 +192,25 @@ let punti = 0;
 function cartaGiocata(carta, cartaSocket) {
 	turno.push(cartaSocket);
 	if (turno.length == 5) {
-
 		io.emit("ultima giocata", {
 			precedente: users[i].id,
 			carta: carta,
-		})
+		});
 		turniEffettuati++;
 		if (turniEffettuati == 1) {
 			bloccoCarte = true;
 			io.emit("prossimo a giocare", vincitoreChiamata.id);
 			scegliBriscola();
-		}
-		else {
+		} else {
 			trovaVincente();
 		}
-
 
 		if (turniEffettuati == 8) finePartita();
 	} else {
 		io.emit("ultima giocata", {
 			precedente: users[i].id,
 			carta: carta,
-		})
+		});
 		i = (i + 1) % 5;
 		io.emit("prossimo a giocare", users[i].id);
 	}
@@ -234,7 +229,7 @@ function trovaVincente() {
 	io.emit("evento log", {
 		user: users[i].id,
 		stringa: " vinto la mano",
-	})
+	});
 	io.emit("prossimo a giocare", users[i].id);
 }
 

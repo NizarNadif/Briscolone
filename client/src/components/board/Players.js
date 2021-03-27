@@ -7,17 +7,21 @@ export function Player(params) {
 	let nCarte = state.giocatori[params.id].carte;
 
 	let stile = {};
-	let stileTesto = {};
+	let stileProfilo = {};
 	switch (params.id) {
 		case 0:
 			stile = {
 				bottom: "30%",
 				right: "0%",
-				transform: `rotate(270deg) translate(30%, ${(90 * nCarte) / 8}%)`,
+				transform: `rotate(270deg) translate(30%, ${(80 * nCarte) / 8}%)`,
 				/* translateY deve rimanere costante
-				90% : n carte massimo = x : n carte rimaste
+				80% : n carte massimo = x : n carte rimaste
 				se non lo si fa, la mano si sposta sempre più verso l'esterno
 				*/
+			};
+			stileProfilo = {
+				...stileProfilo,
+				transform: "rotate(90deg)",
 			};
 			break;
 		case 1:
@@ -26,8 +30,8 @@ export function Player(params) {
 				top: "0%",
 				right: "15%",
 			};
-			stileTesto = {
-				...stileTesto,
+			stileProfilo = {
+				...stileProfilo,
 				transform: "rotate(180deg)",
 			};
 			break;
@@ -37,8 +41,8 @@ export function Player(params) {
 				top: "0%",
 				left: "15%",
 			};
-			stileTesto = {
-				...stileTesto,
+			stileProfilo = {
+				...stileProfilo,
 				transform: "rotate(180deg)",
 			};
 			break;
@@ -46,7 +50,11 @@ export function Player(params) {
 			stile = {
 				bottom: "30%",
 				left: "0%",
-				transform: `rotate(90deg) translate(-30%, ${(90 * nCarte) / 8}%)`,
+				transform: `rotate(90deg) translate(-30%, ${(80 * nCarte) / 8}%)`,
+			};
+			stileProfilo = {
+				...stileProfilo,
+				transform: "rotate(-90deg)",
 			};
 
 			break;
@@ -61,7 +69,7 @@ export function Player(params) {
 				className="carta-coperta"
 				alt={"carta coperta"}
 				src={
-					"https://raw.githubusercontent.com/NizarNadif/Briscolone/main/client/public/assets/Dorso.png"
+					"https://raw.githubusercontent.com/NizarNadif/Briscolone/main/client/src/assets/img/carte/Dorso.png"
 				}
 				key={`player-${params.id}-card-${i}`}
 			/>
@@ -71,8 +79,27 @@ export function Player(params) {
 		<div className="player" id={`player-${params.id}`} style={stile}>
 			<div className="mano-player">{carteJSX}</div>
 			<br></br>
-			<p style={stileTesto}>{state.giocatori[params.id].id}</p>
+			<FloatingProfile
+				style={stileProfilo}
+				id={params.id}
+				contesto={params.contesto}
+			/>
+			{/* <p style={stileProfilo}>{}</p> */}
 		</div>
+	);
+}
+
+function FloatingProfile(params) {
+	const { state, dispatch } = useContext(params.contesto);
+	return (
+		<img
+			style={params.style}
+			id={`player-profile-${params.id}`}
+			className="player-profile-float"
+			src={state.giocatori[params.id].picture}
+			title={state.giocatori[params.id].name}
+			alt={state.giocatori[params.id].name}
+		/>
 	);
 }
 
@@ -163,7 +190,7 @@ export function CartaGiocata(params) {
 									style={toCSS(style)}
 									className="carta-giocata"
 									alt={"carta"}
-									src={`https://raw.githubusercontent.com/NizarNadif/Briscolone/main/client/public/assets/${cartaUltima.url}.png`} //`translateY(${style.y}px)`
+									src={`https://raw.githubusercontent.com/NizarNadif/Briscolone/main/client/src/assets/img/carte/${cartaUltima.url}.png`} //`translateY(${style.y}px)`
 								/>
 							)}
 						</>

@@ -1,6 +1,6 @@
-import React, { useReducer, useContext, useEffect } from "react";
+import React, { useReducer, useContext, useEffect, useState } from "react";
 import { Motion, spring } from "react-motion";
-// import assets from "./carte";
+//import carte from "./carte";
 import BarraChiamata from "./CallingWindow.js";
 import "../../assets/styles/board.css";
 import api from "../../api.js";
@@ -11,16 +11,15 @@ export default Board;
 const AppContext = React.createContext(null);
 
 export function Board() {
-	console.log("welcome to the board");
 	const [state, dispatch] = useReducer(reducer, {
 		carte: new Array(),
 		attuale: { valore: -1, soglia: 61 },
 		ultimaCartaNostra: null,
 		giocatori: [
-			{ id: "giocatore 1", carte: 8, ultimaCarta: null },
-			{ id: "giocatore 2", carte: 8, ultimaCarta: null },
-			{ id: "giocatore 3", carte: 8, ultimaCarta: null },
-			{ id: "giocatore 4", carte: 8, ultimaCarta: null },
+			{ id: "a", name: "giocatore 1", picture: "", carte: 8, ultimaCarta: null },
+			{ id: "b", name: "giocatore 2", picture: "", carte: 8, ultimaCarta: null },
+			{ id: "c", name: "giocatore 3", picture: "", carte: 8, ultimaCarta: null },
+			{ id: "d", name: "giocatore 4", picture: "", carte: 8, ultimaCarta: null },
 		],
 		giocatoreAttuale: -1,
 		bloccoCarte: false,
@@ -32,7 +31,6 @@ export function Board() {
 		punti: 0,
 	});
 	const { user, isAuthenticated } = useAuth0();
-	console.log(user);
 
 	let PlayersJSX = [];
 	for (let i = 0; i < 4; i++)
@@ -50,39 +48,11 @@ export function Board() {
 		isAuthenticated && api.loggedIn(user);
 
 		api.carteIniziali((carte) => {
-			console.log(carte);
 			dispatch({ type: "carte", payload: carte });
 		});
 
 		api.giocatoriIniziali((players) => {
-			console.log(players);
 			dispatch({ type: "giocatori", payload: players });
-		});
-
-		api.eventoLog((evento, itsMe) => {
-			dispatch({
-				type: "evento",
-				payload: `${itsMe ? "Hai" : evento.user + " ha"} ${evento.stringa}`,
-			});
-		});
-
-		api.selezioneChiamata((attuale, chiamante, isChiamante) => {
-			if (chiamante != "RandomID")
-				dispatch({ type: "chiamante", payload: chiamante });
-			dispatch({ type: "chiamata attuale", payload: attuale });
-			if (attuale.valore == 9)
-				document
-					.getElementById("slider-soglia-contenitore")
-					.classList.remove("hidden");
-			else
-				document
-					.getElementById("slider-soglia-contenitore")
-					.classList.add("hidden");
-			blur(
-				isChiamante,
-				["mano", "player", "carta-giocata", "display-socio"],
-				"popup-chiamata"
-			);
 		});
 
 		api.cartaSocio((cartaSocio) => {
@@ -90,12 +60,10 @@ export function Board() {
 		});
 
 		api.prossimoTurno((prossimo) => {
-			console.log("Prossimo a giocare:", prossimo);
 			dispatch({ type: "giocatore attuale", payload: prossimo });
 		});
 
 		api.vincitoreTurno((vincitore, isVincitore) => {
-			console.log("Il turno è stato vinto da:", vincitore);
 			dispatch({ type: "switch" });
 
 			function sleep(time) {
@@ -110,7 +78,6 @@ export function Board() {
 		});
 
 		api.turnoPrecedente((myCard, carta, precedente) => {
-			console.log("Ultima carta giocata:", carta);
 			if (myCard) dispatch({ type: "rimuovi carta", payload: carta });
 			else
 				dispatch({
@@ -127,19 +94,72 @@ export function Board() {
 			);
 		});
 
-		api.vincitore((itsMe, punti) => {
-			if (
-				(itsMe && punti < state.attuale.soglia) ||
-				(!itsMe && punti >= state.attuale.soglia)
-			) {
-				dispatch({ type: "sconfitta" });
-			} else {
-				dispatch({ type: "vittoria" });
-			}
-			if (itsMe) dispatch({ type: "punti", payload: punti });
-			else dispatch({ type: "punti", payload: 120 - punti });
+		api.eventoLog((evento, itsMe) => {
+			dispatch({
+				type: "evento",
+				payload: {
+					user: itsMe ? null : evento.user,
+					stringa: evento.stringa,
+				},
+			});
 		});
 	}, []);
+
+	// possono accedere allo stato aggiornato se vengono caricate fuori dallo useffect
+	api.vincitoreChiamate((chiamante) => {
+		if (chiamante != "RandomID") {
+			console.log(state.giocatori);
+			let nome = state.giocatori.filter((giocatore) => {
+				return giocatore.id == chiamante;
+			});
+			console.log(nome);
+			if (nome.length == 0) nome = "te";
+			else nome = nome[0].name;
+			dispatch({ type: "chiamante", payload: nome });
+		}
+	});
+
+	api.vincitore((itsMe, punti) => {
+		if (
+			(itsMe && punti < state.attuale.soglia) ||
+			(!itsMe && punti >= state.attuale.soglia)
+		) {
+			dispatch({ type: "sconfitta" });
+		} else {
+			dispatch({ type: "vittoria" });
+		}
+		if (itsMe) dispatch({ type: "punti", payload: punti });
+		else dispatch({ type: "punti", payload: 120 - punti });
+	});
+
+	api.selezioneChiamata((attuale, chiamante, isChiamante) => {
+		dispatch({ type: "chiamata attuale", payload: attuale });
+		if (attuale.valore == 9)
+			document
+				.getElementById("slider-soglia-contenitore")
+				.classList.remove("hidden");
+		else
+			document.getElementById("slider-soglia-contenitore").classList.add("hidden");
+		blur(
+			isChiamante,
+			["mano", "player", "carta-giocata", "display-socio"],
+			"popup-chiamata"
+		);
+	});
+
+	/* api.eventoLog((evento, itsMe) => {
+		let nome = "";
+		if (!itsMe) {
+			nome = state.giocatori.filter((giocatore) => {
+				return giocatore.id == evento.user;
+			})[0].name;
+			console.log("il nome del giocatore è", nome);
+		}
+		dispatch({
+			type: "evento",
+			payload: `${itsMe ? "Hai" : nome + " ha"} ${evento.stringa}`,
+		});
+	}); */
 
 	return (
 		<AppContext.Provider value={{ state, dispatch }}>
@@ -172,7 +192,7 @@ export function CartaSocio() {
 				<div className="display-socio">
 					<p>Carta del socio</p>
 					<img
-						src={`https://raw.githubusercontent.com/NizarNadif/Briscolone/main/client/public/assets/${
+						src={`https://raw.githubusercontent.com/NizarNadif/Briscolone/main/client/src/assets/img/carte/${
 							state.cartaSocio.seme + state.cartaSocio.valore
 						}.png`}
 						className="carta"
@@ -189,11 +209,8 @@ export function CartaSocio() {
 }
 
 export function blur(doBlur, classesToBlur, popupID) {
-	console.log("blur:", doBlur);
-
 	classesToBlur.forEach((classToBlur) => {
 		let elements = document.getElementsByClassName(classToBlur);
-		console.log(elements.length);
 		for (let i = 0; i < elements.length; i++)
 			doBlur
 				? elements[i].classList.add("blur")
@@ -232,7 +249,6 @@ function reducer(state, action) {
 					newState.giocatori[index].ultimaCarta = action.payload.carta;
 				}
 			});
-			console.log(newState.giocatori[i].carte, i);
 			break;
 		case "vincitore turno":
 			newState.ultimaCartaNostra = null;
@@ -259,23 +275,37 @@ function reducer(state, action) {
 			});
 			break;
 		case "giocatore attuale":
-			if (newState.giocatoreAttuale >= 0)
-				document
-					.getElementById(`player-${newState.giocatoreAttuale}`)
-					.classList.remove("player-attuale");
+			if (newState.giocatoreAttuale >= 0) {
+				let picture = document.getElementById(
+					`player-profile-${newState.giocatoreAttuale}`
+				);
+				picture.classList.remove("player-attuale");
+				picture.classList.add("player-profile-float");
+			}
 			newState.giocatoreAttuale = state.giocatori
 				.map((el) => el.id)
 				.indexOf(action.payload);
-			if (newState.giocatoreAttuale >= 0)
-				document
-					.getElementById(`player-${newState.giocatoreAttuale}`)
-					.classList.add("player-attuale");
+			if (newState.giocatoreAttuale >= 0) {
+				let picture = document.getElementById(
+					`player-profile-${newState.giocatoreAttuale}`
+				);
+				picture.classList.remove("player-profile-float");
+				picture.classList.add("player-attuale");
+			}
 			break;
 		case "switch":
 			newState.bloccoCarte = !state.bloccoCarte;
 			break;
 		case "evento":
-			newState.log.unshift(action.payload);
+			if (action.payload.user == null)
+				action.payload.stringa = `Hai ${action.payload.stringa}`;
+			else {
+				let nome = state.giocatori.filter((giocatore) => {
+					return giocatore.id == action.payload.user;
+				})[0].name;
+				action.payload.stringa = `${nome} ha ${action.payload.stringa}`;
+			}
+			newState.log.unshift(action.payload.stringa);
 			break;
 		case "vittoria":
 			newState.vincente = true;
@@ -323,7 +353,7 @@ function Carta(props) {
 						}}
 						className="carta"
 						alt={props.carta.valore + " di " + props.carta.seme}
-						src={`https://raw.githubusercontent.com/NizarNadif/Briscolone/main/client/public/assets/${props.carta.url}.png`}
+						src={`https://raw.githubusercontent.com/NizarNadif/Briscolone/main/client/src/assets/img/carte/${props.carta.url}.png`}
 						onClick={() => {
 							if (state.giocatoreAttuale == -1 && !state.bloccoCarte)
 								dispatch({ type: "abbiamo giocato una carta", payload: props.carta });
@@ -355,7 +385,7 @@ export function SelettoreBriscola() {
 			<img
 				key={index}
 				className="carta"
-				src={`https://raw.githubusercontent.com/NizarNadif/Briscolone/main/client/public/assets/${
+				src={`https://raw.githubusercontent.com/NizarNadif/Briscolone/main/client/src/assets/img/carte/${
 					seme + ordine[state.attuale.valore]
 				}.png`}
 				onClick={() => {

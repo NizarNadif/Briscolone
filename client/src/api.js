@@ -1,11 +1,12 @@
 import openSocket from "socket.io-client";
-const socket = openSocket("http://localhost:4321");
+const socket = openSocket("http://localhost:3000");
 
 export default {
 	loggedIn,
 	carteIniziali,
 	selezioneChiamata,
 	invia,
+	vincitoreChiamate,
 	giocaCarta,
 	prossimoTurno,
 	scegliBriscola,
@@ -23,8 +24,7 @@ socket.on("connect", () => {
 });
 
 function loggedIn(data) {
-	socket.emit("join", {});
-	socket.emit("logged in", {
+	socket.emit("join", {
 		name: data.name,
 		picture: data.picture,
 	});
@@ -36,10 +36,13 @@ function carteIniziali(callback) {
 
 function giocatoriIniziali(callback) {
 	socket.on("giocatori", (players) => {
-		let i = (players.indexOf(socket.id) + 1) % 5;
+		let i = 0;
+		players.forEach((player, index) => {
+			if (player.id == socket.id) i = (index + 1) % 5;
+		});
 		let giocatori = new Array();
 		for (let j = 0; j < 4; j++, i = (i + 1) % 5) {
-			giocatori.push({ id: players[i], carte: 8 });
+			giocatori.push({ ...players[i], carte: 8 });
 		}
 		callback(giocatori);
 	});
@@ -47,21 +50,16 @@ function giocatoriIniziali(callback) {
 
 function selezioneChiamata(callback) {
 	socket.on("selezione chiamata", (params) => {
-		console.log(
-			"il tuo id:",
-			socket.id,
-			"id chiamante:",
-			params.chiamante,
-			"uguali:",
-			socket.id == params.chiamante
-		);
 		callback(params.attuale, params.chiamante, socket.id === params.chiamante);
 	});
 }
 
 function invia(chiamata) {
-	console.log("hai chiamato", chiamata.valore, " soglia: ", chiamata.soglia);
 	socket.emit("chiamata", chiamata);
+}
+
+function vincitoreChiamate(callback) {
+	socket.on("vincitore chiamate", (id) => callback(id));
 }
 
 function giocaCarta(carta) {
@@ -82,7 +80,6 @@ function eventoLog(callback) {
 
 function prossimoTurno(callback) {
 	socket.on("prossimo a giocare", (prossimo) => {
-		console.log(prossimo);
 		callback(prossimo);
 	});
 }
@@ -95,7 +92,6 @@ function vincitoreTurno(callback) {
 
 function turnoPrecedente(callback) {
 	socket.on("ultima giocata", (params) => {
-		console.log("ultima giocata: bla bla bla");
 		callback(params.precedente == socket.id, params.carta, params.precedente);
 	});
 }

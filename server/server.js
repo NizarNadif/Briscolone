@@ -10,23 +10,36 @@ var io = require("socket.io")(server, {
 	},
 });
 
-const port = 4321;
+const port = process.env.PORT || 3000;
 
 const users = new Map();
 
 io.on("connection", (client) => {
 	console.log("client", client.id, "connected");
 
-	client.on("join", () => {
+	client.on("join", (data) => {
 		console.log("client", client.id, "joined the game");
 		if (users.size < 5) {
-			users.set(client.id, client);
+			users.set(client.id, {
+				socket: client,
+				id: client.id,
+				name: data.name,
+				picture: data.picture,
+			});
 			client.join(client.id);
 			if (users.size == 5) {
 				io.emit(
 					"giocatori",
-					Array.from(users.values()).map((socket) => socket.id)
+					Array.from(users.values()).map((data) => {
+						let copy = { ...data };
+						delete copy.socket;
+						return copy;
+					})
 				);
+				users.forEach((data, index) => {
+					data = users.get(index).socket;
+					users.set(index, data);
+				});
 				scripts.game(users, io);
 			}
 		}
@@ -35,10 +48,6 @@ io.on("connection", (client) => {
 	client.on("disconnect", () => {
 		console.log("client ", client.id, "disconnected");
 		users.delete(client.id); // dimensione => users.size
-	});
-
-	client.on("logged in", (data) => {
-		console.log(data);
 	});
 
 	client.on("chiamata", (chiamata) => {
@@ -56,6 +65,8 @@ io.on("connection", (client) => {
 	});
 });
 
-server.listen(port, () => {
+server.listen(port);
+
+server.on("listening", () => {
 	console.log("Listening on port", port);
 });
