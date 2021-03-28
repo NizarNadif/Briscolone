@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter, Switch, Route, Link, Redirect } from "react-router-dom";
-import HomePage from "./HomePage";
+import HomePage from "./components/home/HomePage";
 import Board from "./components/board/Board";
 import PrivateRoute from "./components/PrivateRoute";
 
