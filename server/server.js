@@ -12,6 +12,7 @@ var io = require("socket.io")(server, {
 
 const port = process.env.PORT || 3000;
 
+app.use(express.static("dist"));
 const users = new Map();
 
 io.on("connection", (client) => {
