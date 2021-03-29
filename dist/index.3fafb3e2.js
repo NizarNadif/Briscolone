@@ -1056,8 +1056,8 @@ try {
   var _auth0Auth0React = require("@auth0/auth0-react");
   const rootElement = document.getElementById("app");
   _reactDomDefault.default.render(/*#__PURE__*/_reactDefault.default.createElement(_auth0Auth0React.Auth0Provider, {
-    domain: "briscolone.eu.auth0.com",
-    clientId: "SEN6YLz348a49rqhbocbpIqkmZoDJMgx",
+    domain: "nizar-nadif.eu.auth0.com",
+    clientId: "HE66ENWTCBsp3CA1ZDTQ1gL1UpSUG0DV",
     redirectUri: window.location.origin
   }, /*#__PURE__*/_reactDefault.default.createElement(_App.App, null)), rootElement);
   helpers.postlude(module);
@@ -37784,7 +37784,7 @@ var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
 _parcelHelpers.defineInteropFlag(exports);
 var _socketIoClient = require("socket.io-client");
 var _socketIoClientDefault = _parcelHelpers.interopDefault(_socketIoClient);
-const socket = _socketIoClientDefault.default("briscolone.sbibbof.repl.co");
+const socket = _socketIoClientDefault.default("https://briscolone.herokuapp.com");
 exports.default = {
   loggedIn,
   carteIniziali,
